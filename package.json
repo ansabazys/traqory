@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
+  "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
@@ -14,6 +14,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.26.0",
   "devDependencies": {
-    "turbo": "^2.9.16"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^9.39.4",
+    "turbo": "^2.9.16",
+    "typescript-eslint": "^8.60.1"
   }
 }
