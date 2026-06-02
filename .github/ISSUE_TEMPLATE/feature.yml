@@ -1,6 +1,6 @@
 name: Feature
 description: New feature request
-title: "[FEATURE] "
+title: '[FEATURE] '
 labels:
   - enhancement
 

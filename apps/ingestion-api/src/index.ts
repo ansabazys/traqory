@@ -1,10 +1,10 @@
-import Fastify from "fastify";
+import Fastify from 'fastify';
 
 const app = Fastify();
 
-app.get("/health", async () => {
+app.get('/health', async () => {
   return {
-    status: "ok",
+    status: 'ok',
   };
 });
 
