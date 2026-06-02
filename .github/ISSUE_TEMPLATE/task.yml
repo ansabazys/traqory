@@ -1,0 +1,34 @@
+name: Task
+description: Development task
+title: "[TASK] "
+labels:
+  - task
+
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should be completed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Notes
+      placeholder: |
+        Steps to complete the task
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] Task completed
+        - [ ] Tested
+        - [ ] Documentation updated
+    validations:
+      required: true

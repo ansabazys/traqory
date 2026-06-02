@@ -1,0 +1,228 @@
+{
+  "project": "Traqory",
+  "milestones": [
+    {
+      "title": "M1 - Foundation & Architecture",
+      "issues": [
+        "Initialize Turborepo",
+        "Configure workspace packages",
+        "Configure TypeScript",
+        "Configure ESLint",
+        "Configure Prettier",
+        "Configure Husky",
+        "Configure lint-staged",
+        "Setup environment management",
+        "Create Next.js web app",
+        "Create Fastify ingestion-api",
+        "Create tracker-sdk package",
+        "Create shared package",
+        "Create types package",
+        "Setup Docker",
+        "Setup Docker Compose",
+        "Setup GitHub Actions",
+        "Create architecture documentation",
+        "Create ROADMAP.md"
+      ]
+    },
+    {
+      "title": "M2 - Authentication & User Management",
+      "issues": [
+        "Setup PostgreSQL",
+        "Setup Prisma",
+        "Create initial migration",
+        "Create User schema",
+        "Create User repository",
+        "Create User service",
+        "Integrate Better Auth",
+        "Register page",
+        "Login page",
+        "Logout functionality",
+        "Protected routes",
+        "Session management",
+        "User profile page",
+        "Change password",
+        "Delete account"
+      ]
+    },
+    {
+      "title": "M3 - Website Management",
+      "issues": [
+        "Create Website schema",
+        "Create Website migration",
+        "Create Website CRUD API",
+        "Create website ownership validation",
+        "Create tracking key generator",
+        "Create tracking key regeneration",
+        "Website listing page",
+        "Website details page",
+        "Create website form",
+        "Edit website form",
+        "Delete website flow",
+        "Domain validation"
+      ]
+    },
+    {
+      "title": "M4 - Tracker SDK",
+      "issues": [
+        "SDK initialization",
+        "SDK configuration",
+        "SDK transport layer",
+        "SDK error handling",
+        "Visitor ID generation",
+        "Visitor ID persistence",
+        "Session ID generation",
+        "Session timeout handling",
+        "Page view tracking",
+        "Custom event tracking",
+        "Event queue",
+        "Event batching",
+        "Retry failed requests",
+        "SDK installation docs",
+        "SDK usage examples"
+      ]
+    },
+    {
+      "title": "M5 - Event Ingestion API",
+      "issues": [
+        "Validate tracking key",
+        "Validate event payload",
+        "Create POST /events",
+        "Create POST /batch-events",
+        "Parse user-agent",
+        "Extract IP address",
+        "Country lookup integration",
+        "Create Event schema",
+        "Store page views",
+        "Store custom events",
+        "Event indexing",
+        "Rate limiting",
+        "CORS configuration",
+        "Request logging"
+      ]
+    },
+    {
+      "title": "M6 - Analytics Dashboard",
+      "issues": [
+        "Total visitors card",
+        "Total page views card",
+        "Total sessions card",
+        "Total websites card",
+        "Visitors chart",
+        "Page views chart",
+        "Sessions chart",
+        "Top pages report",
+        "Top countries report",
+        "Top browsers report",
+        "Top devices report",
+        "Date range filter",
+        "Website filter"
+      ]
+    },
+    {
+      "title": "M7 - Session Analytics",
+      "issues": [
+        "Session reconstruction",
+        "Session duration calculation",
+        "Bounce detection",
+        "New vs returning visitors",
+        "Average session duration",
+        "Bounce rate",
+        "Visitor history",
+        "Session timeline"
+      ]
+    },
+    {
+      "title": "M8 - Traffic Sources & Attribution",
+      "issues": [
+        "Referrer tracking",
+        "UTM tracking",
+        "Source analytics",
+        "Medium analytics",
+        "Campaign analytics",
+        "Landing pages report",
+        "Exit pages report"
+      ]
+    },
+    {
+      "title": "M9 - Realtime Analytics",
+      "issues": [
+        "WebSocket setup",
+        "Realtime visitor count",
+        "Live page views",
+        "Live events feed",
+        "Realtime dashboard widgets"
+      ]
+    },
+    {
+      "title": "M10 - Queue Processing",
+      "issues": [
+        "Setup Redis",
+        "Setup BullMQ",
+        "Create worker service",
+        "Queue incoming events",
+        "Retry failed jobs",
+        "Dead letter queue",
+        "Worker monitoring"
+      ]
+    },
+    {
+      "title": "M11 - ClickHouse Migration",
+      "issues": [
+        "Setup ClickHouse",
+        "Design analytics schema",
+        "Migrate events storage",
+        "Aggregation tables",
+        "Optimize dashboard queries",
+        "Benchmark performance"
+      ]
+    },
+    {
+      "title": "M12 - Advanced Analytics",
+      "issues": [
+        "Custom events explorer",
+        "Funnel builder",
+        "Funnel visualization",
+        "User journey tracking",
+        "Path analysis",
+        "Scroll depth tracking",
+        "Heatmap event collection",
+        "Heatmap visualization"
+      ]
+    },
+    {
+      "title": "M13 - Performance & Optimization",
+      "issues": [
+        "Database indexing",
+        "API response caching",
+        "Dashboard query optimization",
+        "SDK bundle optimization",
+        "Lazy loading charts",
+        "Performance audit"
+      ]
+    },
+    {
+      "title": "M14 - Deployment & DevOps",
+      "issues": [
+        "Production Dockerfiles",
+        "Render deployment",
+        "Environment configuration",
+        "Database backups",
+        "Health checks",
+        "Logging strategy",
+        "Monitoring setup"
+      ]
+    },
+    {
+      "title": "M15 - Documentation & Release",
+      "issues": [
+        "API documentation",
+        "SDK documentation",
+        "Architecture documentation",
+        "User onboarding guide",
+        "Screenshots and demo",
+        "Release v1.0",
+        "Publish portfolio case study"
+      ]
+    }
+  ]
+}
