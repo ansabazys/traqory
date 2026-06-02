@@ -12,6 +12,12 @@ importers:
         specifier: ^2.9.16
         version: 2.9.16
 
+  packages/config: {}
+
+  packages/shared: {}
+
+  packages/types: {}
+
 packages:
 
   '@turbo/darwin-64@2.9.16':
