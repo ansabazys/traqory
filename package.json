@@ -12,6 +12,14 @@
     "format:check": "prettier --check .",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix --no-warn-ignored"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -20,6 +28,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^9.39.4",
     "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "prettier": "^3.8.3",
     "turbo": "^2.9.16",
     "typescript-eslint": "^8.60.1"
