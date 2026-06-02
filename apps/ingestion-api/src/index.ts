@@ -1,13 +1,15 @@
-import Fastify from "fastify";
+import Fastify from 'fastify';
+import { env } from './env';
 
 const app = Fastify();
 
-app.get("/health", async () => {
+
+app.get('/health', async () => {
   return {
-    status: "ok",
+    status: 'ok',
   };
 });
 
 app.listen({
-  port: 4000,
+  port: env.INGESTION_API_PORT,
 });

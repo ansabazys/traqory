@@ -1,10 +1,10 @@
-import js from "@eslint/js";
+import js from '@eslint/js';
 
 export default [
   js.configs.recommended,
   {
     rules: {
-      "no-console": "warn",
+      'no-console': 'warn',
     },
   },
 ];
