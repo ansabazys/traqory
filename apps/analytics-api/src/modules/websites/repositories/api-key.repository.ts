@@ -1,8 +1,5 @@
 import { and, desc, eq } from "drizzle-orm";
-
-import { db } from "../../../database/client.js";
-import { apiKey } from "../../../database/schema/api-key.schema.js";
-import { website } from "../../../database/schema/website.schema.js";
+import { apiKey, db, website } from "@traqory/database";
 
 export class ApiKeyRepository {
   async findByKey(key: string) {

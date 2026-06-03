@@ -19,9 +19,10 @@ CORS_ORIGIN=http://localhost:3000
 pnpm dev
 pnpm build
 pnpm typecheck
-pnpm db:generate
-pnpm db:migrate
 ```
+
+Database schemas and migrations are owned by `@traqory/database`.
+Run migration commands from `packages/database`, not from this service.
 
 ## Health
 

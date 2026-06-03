@@ -1,8 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
+import { db, website } from "@traqory/database";
+import type { NewWebsite } from "@traqory/database";
 
-import { db } from "../../../database/client.js";
-import { website } from "../../../database/schema/website.schema.js";
-import type { NewWebsite } from "../../../database/schema/website.schema.js";
 import type { UpdateWebsiteDto } from "../dto/website.dto.js";
 
 export class WebsiteRepository {

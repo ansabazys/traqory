@@ -12,6 +12,19 @@ AUTH_SERVICE_URL=http://localhost:3001
 CORS_ORIGIN=http://localhost:3000
 ```
 
+## Database
+
+Analytics API imports `db`, `website`, and `apiKey` from `@traqory/database`.
+Do not run Drizzle migrations from this service.
+
+Run database commands from `packages/database` only:
+
+```sh
+pnpm --filter @traqory/database db:generate
+pnpm --filter @traqory/database db:migrate
+pnpm --filter @traqory/database db:push
+```
+
 ## Auth
 
 Every Website Management endpoint forwards the incoming `Cookie` header to:

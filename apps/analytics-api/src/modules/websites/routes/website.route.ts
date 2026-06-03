@@ -16,4 +16,8 @@ export async function websiteRoutes(app: FastifyInstance) {
   app.get("/websites/:id/api-keys", websiteController.listApiKeys);
   app.delete("/api-keys/:id", websiteController.revokeApiKey);
   app.post("/api-keys/:id/rotate", websiteController.rotateApiKey);
+
+  app.get("/me", async (request) => {
+  return request.user;
+});
 }

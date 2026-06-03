@@ -2,7 +2,10 @@ import { HttpError } from '../../../lib/http-error.js';
 import { generateTrackingKey } from '../../../lib/api-key-generator.js';
 import { normalizeDomain } from '../../../lib/domain.js';
 import { slugify } from '../../../lib/slug.js';
-import type { CreateWebsiteDto, UpdateWebsiteDto } from '../dto/website.dto.js';
+import type {
+  CreateWebsiteDto,
+  UpdateWebsiteDto,
+} from '../dto/website.dto.js';
 import { apiKeyRepository } from '../repositories/api-key.repository.js';
 import { websiteRepository } from '../repositories/website.repository.js';
 

@@ -1,7 +1,6 @@
 import { eq } from "drizzle-orm";
+import { db, user } from "@traqory/database";
 
-import { db } from "../../../database/client.js";
-import { user } from "../../../database/schema/auth-schema.js";
 import type { UpdateProfilePayload } from "../dto/user.dto.js";
 
 export class UserRepository {
