@@ -1,7 +1,12 @@
-import { app } from './app.js';
-import { env } from './config/env.js';
+import { app } from "./app.js";
+import { env } from "./config/env.js";
 
-app.listen({
-  port: Number(env.PORT),
-  host: '0.0.0.0',
-});
+try {
+  await app.listen({
+    port: env.PORT,
+    host: env.HOST,
+  });
+} catch (error) {
+  app.log.error(error);
+  process.exit(1);
+}

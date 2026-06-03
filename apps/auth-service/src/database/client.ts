@@ -1,8 +1,13 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 
-import { env } from "../config/env";
+import { env } from "../config/env.js";
+import * as schema from "./schema/auth-schema.js";
 
-const queryClient = postgres(env.DATABASE_URL);
+export const queryClient = postgres(env.DATABASE_URL, {
+  max: 10,
+  idle_timeout: 20,
+  connect_timeout: 10,
+});
 
-export const db = drizzle(queryClient);
+export const db = drizzle(queryClient, { schema });
