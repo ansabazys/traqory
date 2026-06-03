@@ -29,3 +29,33 @@ export function removeLocalStorage(key: string): void {
     console.log('ERROR');
   }
 }
+
+export function getSessionStorage(key: string): string | null {
+  if (!isBrowser) return null;
+
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+export function setSessionStorage(key: string, value: string): void {
+  if (!isBrowser) return;
+
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch (error) {
+    console.warn('[Traqory] Failed to write sessionStorage', error);
+  }
+}
+
+export function removeSessionStorage(key: string): void {
+  if (!isBrowser) return;
+
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch (error) {
+    console.warn('[Traqory] Failed to write sessionStorage', error);
+  }
+}
