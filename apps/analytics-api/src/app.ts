@@ -1,0 +1,24 @@
+import Fastify from "fastify";
+import cors from "@fastify/cors";
+
+import { env } from "./config/env.js";
+import { errorMiddleware } from "./middleware/error.middleware.js";
+import { websiteModule } from "./modules/websites/website.module.js";
+import { healthRoute } from "./routes/health.route.js";
+
+export const app = Fastify({
+  logger: {
+    level: env.NODE_ENV === "production" ? "info" : "debug",
+  },
+});
+
+app.decorateRequest("user", null);
+
+await app.register(cors, {
+  origin: env.CORS_ORIGIN,
+  credentials: true,
+});
+
+await app.register(errorMiddleware);
+await app.register(healthRoute);
+await app.register(websiteModule);
