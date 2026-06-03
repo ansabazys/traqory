@@ -1,5 +1,5 @@
-import type { EventPayload } from "../types";
-import { sendEvent } from "./transport";
+import type { EventPayload } from '../types';
+import { sendEvent } from './transport';
 
 interface QueueItem {
   payload: EventPayload;
@@ -40,13 +40,10 @@ class EventQueue {
         } catch {
           item.attempts++;
 
-          if (
-            item.attempts >=
-            this.MAX_RETRIES
-          ) {
+          if (item.attempts >= this.MAX_RETRIES) {
             this.queue.shift();
           } else {
-            await this.delay(1000);
+            await this.delay(Math.pow(2, item.attempts) * 1000);
           }
         }
       }
@@ -55,14 +52,9 @@ class EventQueue {
     }
   }
 
-  private delay(
-    ms: number
-  ): Promise<void> {
-    return new Promise((resolve) =>
-      setTimeout(resolve, ms)
-    );
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
-export const eventQueue =
-  new EventQueue();
+export const eventQueue = new EventQueue();

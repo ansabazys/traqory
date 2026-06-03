@@ -2,6 +2,19 @@ import { isBrowser } from "../utils/browser";
 import { pageview } from "./pageview";
 
 let initialized = false;
+let lastUrl = "";
+
+function triggerPageview(): void {
+  const currentUrl = window.location.href;
+
+  if (currentUrl === lastUrl) {
+    return;
+  }
+
+  lastUrl = currentUrl;
+
+  pageview();
+}
 
 export function setupAutoPageview(): void {
   if (!isBrowser || initialized) {
@@ -10,34 +23,28 @@ export function setupAutoPageview(): void {
 
   initialized = true;
 
-  pageview();
+  triggerPageview();
 
-  const originalPushState =
-    history.pushState;
-
-  const originalReplaceState =
-    history.replaceState;
+  const originalPushState = history.pushState;
+  const originalReplaceState = history.replaceState;
 
   history.pushState = function (
-    ...args
+    ...args: Parameters<History["pushState"]>
   ) {
     originalPushState.apply(this, args);
 
-    pageview();
+    triggerPageview();
   };
 
   history.replaceState = function (
-    ...args
+    ...args: Parameters<History["replaceState"]>
   ) {
     originalReplaceState.apply(this, args);
 
-    pageview();
+    triggerPageview();
   };
 
-  window.addEventListener(
-    "popstate",
-    () => {
-      pageview();
-    }
-  );
+  window.addEventListener("popstate", () => {
+    triggerPageview();
+  });
 }

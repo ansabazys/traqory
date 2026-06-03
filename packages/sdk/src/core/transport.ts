@@ -1,24 +1,27 @@
 import type { EventPayload } from "../types";
 import { client } from "../client";
+import { debug } from "../utils/logger";
 
 export async function sendEvent(
   payload: EventPayload
 ): Promise<void> {
-  const { endpoint, debug } =
-    client.getConfig();
+  const { endpoint } = client.getConfig();
+
+  const controller = new AbortController();
+
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 10_000);
 
   try {
-    const response = await fetch(
-      endpoint!,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const response = await fetch(endpoint!, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
 
     if (!response.ok) {
       throw new Error(
@@ -26,20 +29,18 @@ export async function sendEvent(
       );
     }
 
-    if (debug) {
-      console.log(
-        "[Traqory] Event sent",
-        payload
-      );
-    }
+    debug(
+      "Event sent",
+      payload.event
+    );
   } catch (error) {
-    if (debug) {
-      console.error(
-        "[Traqory] Failed to send event",
-        error
-      );
-    }
+    debug(
+      "Failed to send event",
+      error
+    );
 
     throw error;
+  } finally {
+    clearTimeout(timeout);
   }
 }

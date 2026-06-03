@@ -16,3 +16,4 @@ export { getSessionId } from "./core/session";
 export { identify } from "./features/identify";
 export { track } from "./features/track";
 export { pageview } from "./features/pageview";
+export { reset } from "./features/reset";
