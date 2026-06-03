@@ -1,0 +1,1 @@
+export { getVisitorId } from "./core/visitor";
