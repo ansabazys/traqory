@@ -1,17 +1,19 @@
 import { FastifyInstance } from "fastify";
-import { BatchSchema } from "../schemas/event.schema";
-import { validateApiKey } from "../services/project.service";
+
+import { BatchSchema } from "../schemas/event.schema.js";
+import { validateApiKey } from "../services/api-key.service.js";
 
 export async function eventsRoutes(
-  app: FastifyInstance
+  app: FastifyInstance,
 ) {
   app.post("/", async (req, reply) => {
     const body = BatchSchema.parse(req.body);
 
-    const project =
-      await validateApiKey(body.apiKey);
+    const key = await validateApiKey(
+      body.apiKey,
+    );
 
-    if (!project) {
+    if (!key) {
       return reply.status(401).send({
         success: false,
         message: "Invalid API key",
@@ -20,7 +22,7 @@ export async function eventsRoutes(
 
     return reply.status(202).send({
       success: true,
-      projectId: project.id,
+      websiteId: key.websiteId,
       received: body.events.length,
     });
   });

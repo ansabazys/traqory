@@ -8,14 +8,17 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "default": "./dist/index.js",
       "import": "./dist/index.js"
     },
     "./schema/auth": {
       "types": "./dist/schema/auth/auth.schema.d.ts",
+      "default": "./dist/schema/auth/auth.schema.js",
       "import": "./dist/schema/auth/auth.schema.js"
     },
     "./schema/analytics": {
       "types": "./dist/schema/analytics/index.d.ts",
+      "default": "./dist/schema/analytics/index.js",
       "import": "./dist/schema/analytics/index.js"
     }
   },
