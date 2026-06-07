@@ -17,3 +17,4 @@ export { identify } from "./features/identify";
 export { track } from "./features/track";
 export { pageview } from "./features/pageview";
 export { reset } from "./features/reset";
+export { SDK_VERSION } from "./version";
