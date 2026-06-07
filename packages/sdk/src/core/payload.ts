@@ -2,12 +2,15 @@ import { client } from "../client";
 import type { EventPayload } from "../types";
 import { now } from "../utils/timestamp";
 import { isBrowser } from "../utils/browser";
+import { getContext } from "./context";
 
 export function createPayload(
   event: string,
-  properties: Record<string, unknown> = {}
+  properties: Record<string, unknown> = {},
 ): EventPayload {
   const config = client.getConfig();
+
+  const context = getContext();
 
   const url = isBrowser
     ? window.location.href
@@ -41,6 +44,10 @@ export function createPayload(
     path,
     referrer,
     title,
+
+    language: context.language,
+    timezone: context.timezone,
+    screen: context.screen,
 
     properties,
   };

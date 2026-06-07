@@ -4,15 +4,22 @@ import { DEFAULT_CONFIG } from "./config";
 import { getVisitorId } from "./core/visitor";
 import { getSessionId } from "./core/session";
 import { getUserId } from "./features/identify";
+
 import { validateConfig } from "./config/validate";
+
 import { setupLifecycleHandlers } from "./core/lifecycle";
+import { setupNetworkHandlers } from "./core/network";
 
 class TraqoryClient {
   private config: SDKConfig | null = null;
 
   init(config: SDKConfig): void {
-    if (!config.apiKey) {
-      throw new Error("[Traqory] apiKey is required.");
+    if (this.config) {
+      console.warn(
+        "[Traqory] SDK already initialized.",
+      );
+
+      return;
     }
 
     validateConfig(config);
@@ -21,14 +28,15 @@ class TraqoryClient {
       ...DEFAULT_CONFIG,
       ...config,
     };
-    
+
     setupLifecycleHandlers();
+    setupNetworkHandlers();
   }
 
   getConfig(): SDKConfig {
     if (!this.config) {
       throw new Error(
-        "[Traqory] SDK not initialized. Call init() first."
+        "[Traqory] SDK not initialized. Call init() first.",
       );
     }
 
@@ -52,4 +60,5 @@ class TraqoryClient {
   }
 }
 
-export const client = new TraqoryClient();
+export const client =
+  new TraqoryClient();

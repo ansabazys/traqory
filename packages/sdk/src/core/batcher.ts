@@ -1,6 +1,11 @@
 import type { EventPayload } from "../types";
 import { client } from "../client";
 import { sendBatch } from "./transport";
+import {
+  saveQueue,
+  loadQueue,
+  clearQueue,
+} from "./queue-storage";
 
 class EventBatcher {
   private queue: EventPayload[] = [];
@@ -9,8 +14,22 @@ class EventBatcher {
 
   private flushing = false;
 
+  constructor() {
+    this.queue = loadQueue();
+  }
+
+  private isOnline(): boolean {
+    if (typeof navigator === "undefined") {
+      return true;
+    }
+
+    return navigator.onLine;
+  }
+
   add(event: EventPayload): void {
     this.queue.push(event);
+
+    saveQueue(this.queue);
 
     const { batchSize = 10 } =
       client.getConfig();
@@ -45,6 +64,10 @@ class EventBatcher {
       return;
     }
 
+    if (!this.isOnline()) {
+      return;
+    }
+
     this.flushing = true;
 
     const batch = [...this.queue];
@@ -58,8 +81,13 @@ class EventBatcher {
 
     try {
       await sendBatch(batch);
+
+      clearQueue();
     } catch (error) {
       this.queue.unshift(...batch);
+
+      saveQueue(this.queue);
+
       throw error;
     } finally {
       this.flushing = false;
@@ -72,6 +100,8 @@ class EventBatcher {
 
   clear(): void {
     this.queue = [];
+
+    clearQueue();
 
     if (this.timer) {
       clearTimeout(this.timer);

@@ -13,7 +13,6 @@ export interface EventPayload {
   apiKey: string;
 
   event: string;
-  
 
   visitorId: string;
   sessionId: string;
@@ -28,4 +27,8 @@ export interface EventPayload {
   title: string;
 
   properties?: Record<string, unknown>;
+
+  language?: string;
+  timezone?: string;
+  screen?: string;
 }

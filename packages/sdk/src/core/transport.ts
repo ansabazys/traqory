@@ -42,6 +42,10 @@ export async function sendBatch(events: EventPayload[]): Promise<void> {
 
           title: event.title,
 
+          language: event.language,
+          timezone: event.timezone,
+          screen: event.screen,
+
           properties: event.properties,
         })),
       }),
@@ -64,18 +68,12 @@ export async function sendBatch(events: EventPayload[]): Promise<void> {
   }
 }
 
-export function sendBeaconBatch(
-  events: EventPayload[],
-): boolean {
-  if (
-    typeof navigator === 'undefined' ||
-    !navigator.sendBeacon
-  ) {
+export function sendBeaconBatch(events: EventPayload[]): boolean {
+  if (typeof navigator === 'undefined' || !navigator.sendBeacon) {
     return false;
   }
 
-  const { endpoint, apiKey } =
-    client.getConfig();
+  const { endpoint, apiKey } = client.getConfig();
 
   const payload = {
     apiKey,
@@ -98,15 +96,9 @@ export function sendBeaconBatch(
     })),
   };
 
-  const blob = new Blob(
-    [JSON.stringify(payload)],
-    {
-      type: 'application/json',
-    },
-  );
+  const blob = new Blob([JSON.stringify(payload)], {
+    type: 'application/json',
+  });
 
-  return navigator.sendBeacon(
-    endpoint,
-    blob,
-  );
+  return navigator.sendBeacon(endpoint, blob);
 }
