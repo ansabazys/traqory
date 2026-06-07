@@ -5,6 +5,7 @@ import { getVisitorId } from "./core/visitor";
 import { getSessionId } from "./core/session";
 import { getUserId } from "./features/identify";
 import { validateConfig } from "./config/validate";
+import { setupLifecycleHandlers } from "./core/lifecycle";
 
 class TraqoryClient {
   private config: SDKConfig | null = null;
@@ -20,6 +21,8 @@ class TraqoryClient {
       ...DEFAULT_CONFIG,
       ...config,
     };
+    
+    setupLifecycleHandlers();
   }
 
   getConfig(): SDKConfig {

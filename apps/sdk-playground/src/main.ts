@@ -2,6 +2,7 @@ import { init, track } from '@traqory/sdk';
 
 init({
   apiKey: 'trk_IVX4NisxS5ZnXU12mW_Kz3YahrZzq9zm',
+   endpoint: "http://localhost:3003/v1/events",
 });
 
 document.body.innerHTML = `
@@ -18,7 +19,4 @@ document.getElementById('signup')?.addEventListener('click', () => {
   console.log('signup tracked');
 });
 
-
-track("signup");
-track("purchase");
-track("button_click");
+track("test");
