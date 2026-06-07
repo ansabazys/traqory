@@ -3,6 +3,8 @@ export interface EventJob {
 
   event: string;
 
+  properties?: Record<string, unknown>;
+
   path: string;
   url: string;
 

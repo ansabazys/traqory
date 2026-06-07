@@ -10,6 +10,8 @@ export function enrichEvent(
 
     userId?: string;
 
+    properties?: Record<string, unknown>;
+
     timestamp: number;
   },
   metadata: {
@@ -31,6 +33,8 @@ export function enrichEvent(
     city: string | null;
     latitude: number | null;
     longitude: number | null;
+
+    properties?: Record<string, unknown>;
   },
 ) {
   return {
@@ -64,6 +68,8 @@ export function enrichEvent(
 
     latitude: metadata.latitude,
     longitude: metadata.longitude,
+
+    properties: event.properties ?? {},
 
     receivedAt: Date.now(),
   };

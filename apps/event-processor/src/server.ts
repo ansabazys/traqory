@@ -12,6 +12,9 @@ const worker = createEventsWorker(async (job) => {
     await createEvent({
       websiteId: event.websiteId,
       event: event.event,
+
+      properties: event.properties,
+      
       path: event.path,
       url: event.url,
       ip: event.ip,

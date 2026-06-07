@@ -1,4 +1,4 @@
-import { index, pgTable, text, doublePrecision, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, pgTable, text, doublePrecision, timestamp, uuid, jsonb } from 'drizzle-orm/pg-core';
 
 import { website } from './website.schema.js';
 
@@ -14,6 +14,8 @@ export const event = pgTable(
       }),
 
     event: text('event').notNull(),
+
+    properties: jsonb('properties'),
 
     path: text('path').notNull(),
 

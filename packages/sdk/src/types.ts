@@ -9,6 +9,7 @@ export interface EventPayload {
   apiKey: string;
 
   event: string;
+  
 
   visitorId: string;
   sessionId: string;
@@ -22,5 +23,5 @@ export interface EventPayload {
   referrer: string;
   title: string;
 
-  properties: Record<string, unknown>;
+  properties?: Record<string, unknown>;
 }

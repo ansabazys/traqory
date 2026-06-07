@@ -17,3 +17,10 @@ document.getElementById('signup')?.addEventListener('click', () => {
 
   console.log('signup tracked');
 });
+
+
+track("purchase", {
+  amount: 99,
+  currency: "USD",
+  plan: "pro",
+});

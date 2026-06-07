@@ -1,7 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const EventSchema = z.object({
   event: z.string(),
+
+  properties: z.record(z.string(), z.unknown()).optional(),
 
   path: z.string(),
 
