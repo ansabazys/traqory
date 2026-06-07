@@ -31,6 +31,8 @@ function serializeEvents(
     utm_content: event.utm_content,
 
     properties: event.properties,
+
+    sdkVersion: event.sdkVersion,
   }));
 }
 

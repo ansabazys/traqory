@@ -1,10 +1,11 @@
-import { client } from "../client";
-import type { EventPayload } from "../types";
-import { now } from "../utils/timestamp";
-import { isBrowser } from "../utils/browser";
+import { client } from '../client';
+import type { EventPayload } from '../types';
+import { now } from '../utils/timestamp';
+import { isBrowser } from '../utils/browser';
 
-import { getContext } from "./context";
-import { getUTMParams } from "./utm";
+import { getContext } from './context';
+import { getUTMParams } from './utm';
+import { SDK_VERSION } from '../version';
 
 export function createPayload(
   event: string,
@@ -15,26 +16,20 @@ export function createPayload(
   const context = getContext();
   const utm = getUTMParams();
 
-  const url = isBrowser
-    ? window.location.href
-    : "";
+  const url = isBrowser ? window.location.href : '';
 
-  const path = isBrowser
-    ? window.location.pathname
-    : "";
+  const path = isBrowser ? window.location.pathname : '';
 
-  const referrer = isBrowser
-    ? document.referrer
-    : "";
+  const referrer = isBrowser ? document.referrer : '';
 
-  const title = isBrowser
-    ? document.title
-    : "";
+  const title = isBrowser ? document.title : '';
 
   return {
     apiKey: config.apiKey,
 
     event,
+
+    sdkVersion: SDK_VERSION,
 
     visitorId: client.getVisitorId(),
     sessionId: client.getSessionId(),

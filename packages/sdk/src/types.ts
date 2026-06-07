@@ -37,4 +37,6 @@ export interface EventPayload {
   utm_campaign?: string;
   utm_term?: string;
   utm_content?: string;
+
+  sdkVersion: string;
 }
