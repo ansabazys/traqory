@@ -2,7 +2,9 @@ import { client } from "../client";
 import type { EventPayload } from "../types";
 import { now } from "../utils/timestamp";
 import { isBrowser } from "../utils/browser";
+
 import { getContext } from "./context";
+import { getUTMParams } from "./utm";
 
 export function createPayload(
   event: string,
@@ -11,6 +13,7 @@ export function createPayload(
   const config = client.getConfig();
 
   const context = getContext();
+  const utm = getUTMParams();
 
   const url = isBrowser
     ? window.location.href
@@ -48,6 +51,12 @@ export function createPayload(
     language: context.language,
     timezone: context.timezone,
     screen: context.screen,
+
+    utm_source: utm.utm_source,
+    utm_medium: utm.utm_medium,
+    utm_campaign: utm.utm_campaign,
+    utm_term: utm.utm_term,
+    utm_content: utm.utm_content,
 
     properties,
   };
