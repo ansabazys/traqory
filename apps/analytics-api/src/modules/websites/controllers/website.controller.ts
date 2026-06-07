@@ -48,11 +48,10 @@ export class WebsiteController {
     request: FastifyRequest<{ Params: IdParams }>,
     reply: FastifyReply,
   ) {
-    const payload = validateBody(request, createApiKeySchema);
+    validateBody(request, createApiKeySchema);
     const apiKey = await websiteService.createApiKey(
       request.params.id,
       request.user!.id,
-      payload,
     );
 
     return reply.status(201).send(apiKey);

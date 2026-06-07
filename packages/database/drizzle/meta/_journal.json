@@ -15,6 +15,13 @@
       "when": 1780821054952,
       "tag": "0001_old_ikaris",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780831217729,
+      "tag": "0002_tan_brother_voodoo",
+      "breakpoints": true
     }
   ]
 }

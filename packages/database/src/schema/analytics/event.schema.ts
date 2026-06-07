@@ -2,6 +2,7 @@ import {
   index,
   pgTable,
   text,
+  doublePrecision,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -31,6 +32,16 @@ export const event = pgTable(
 
     userAgent: text("user_agent").notNull(),
 
+    country: text("country"),
+
+    region: text("region"),
+
+    city: text("city"),
+
+    latitude: doublePrecision("latitude"),
+
+    longitude: doublePrecision("longitude"),
+
     timestamp: timestamp("timestamp")
       .notNull(),
 
@@ -47,6 +58,13 @@ export const event = pgTable(
     ),
     index("event_timestamp_idx").on(
       table.timestamp,
+    ),
+    index("event_website_timestamp_idx").on(
+      table.websiteId,
+      table.timestamp,
+    ),
+    index("event_country_idx").on(
+      table.country,
     ),
   ],
 );
