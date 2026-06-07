@@ -4,6 +4,7 @@ import { DEFAULT_CONFIG } from "./config";
 import { getVisitorId } from "./core/visitor";
 import { getSessionId } from "./core/session";
 import { getUserId } from "./features/identify";
+import { validateConfig } from "./config/validate";
 
 class TraqoryClient {
   private config: SDKConfig | null = null;
@@ -12,6 +13,8 @@ class TraqoryClient {
     if (!config.apiKey) {
       throw new Error("[Traqory] apiKey is required.");
     }
+
+    validateConfig(config);
 
     this.config = {
       ...DEFAULT_CONFIG,

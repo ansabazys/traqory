@@ -1,8 +1,12 @@
 export interface SDKConfig {
   apiKey: string;
-  endpoint?: string;
+  endpoint: string;
+
   autoPageview?: boolean;
   debug?: boolean;
+
+  batchSize?: number;
+  flushInterval?: number;
 }
 
 export interface EventPayload {
