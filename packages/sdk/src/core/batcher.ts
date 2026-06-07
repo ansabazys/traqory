@@ -1,18 +1,21 @@
 import type { EventPayload } from "../types";
+import { client } from "../client";
 import { sendBatch } from "./transport";
-
-const MAX_BATCH_SIZE = 10;
-const FLUSH_INTERVAL = 5000;
 
 class EventBatcher {
   private queue: EventPayload[] = [];
 
   private timer: number | null = null;
 
-  add(event: EventPayload) {
+  private flushing = false;
+
+  add(event: EventPayload): void {
     this.queue.push(event);
 
-    if (this.queue.length >= MAX_BATCH_SIZE) {
+    const { batchSize = 10 } =
+      client.getConfig();
+
+    if (this.queue.length >= batchSize) {
       void this.flush();
       return;
     }
@@ -20,20 +23,29 @@ class EventBatcher {
     this.scheduleFlush();
   }
 
-  private scheduleFlush() {
+  private scheduleFlush(): void {
     if (this.timer) {
       return;
     }
 
+    const { flushInterval = 5000 } =
+      client.getConfig();
+
     this.timer = window.setTimeout(() => {
       void this.flush();
-    }, FLUSH_INTERVAL);
+    }, flushInterval);
   }
 
-  async flush() {
+  async flush(): Promise<void> {
+    if (this.flushing) {
+      return;
+    }
+
     if (this.queue.length === 0) {
       return;
     }
+
+    this.flushing = true;
 
     const batch = [...this.queue];
 
@@ -44,7 +56,27 @@ class EventBatcher {
       this.timer = null;
     }
 
-    await sendBatch(batch);
+    try {
+      await sendBatch(batch);
+    } catch (error) {
+      this.queue.unshift(...batch);
+      throw error;
+    } finally {
+      this.flushing = false;
+    }
+  }
+
+  getQueue(): EventPayload[] {
+    return [...this.queue];
+  }
+
+  clear(): void {
+    this.queue = [];
+
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 }
 
