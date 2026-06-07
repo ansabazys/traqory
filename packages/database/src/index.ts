@@ -5,3 +5,4 @@ export * from "./schema/analytics/index.js";
 
 export * from "./repositories/api-key.repository.js";
 export * from "./repositories/event.repository.js";
+export * from "./repositories/analytics.repository.js";
