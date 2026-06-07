@@ -19,8 +19,6 @@ document.getElementById('signup')?.addEventListener('click', () => {
 });
 
 
-track("purchase", {
-  amount: 99,
-  currency: "USD",
-  plan: "pro",
-});
+track("signup");
+track("purchase");
+track("button_click");
