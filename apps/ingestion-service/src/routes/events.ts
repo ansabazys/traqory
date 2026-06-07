@@ -4,9 +4,7 @@ import { BatchSchema } from '../schemas/event.schema.js';
 import { validateApiKey } from '../services/api-key.service.js';
 import { enrichEvent } from '../services/event.service.js';
 
-export async function eventsRoutes(
-  app: FastifyInstance,
-) {
+export async function eventsRoutes(app: FastifyInstance) {
   app.post('/', async (req, reply) => {
     const result = BatchSchema.safeParse(req.body);
 
@@ -20,9 +18,7 @@ export async function eventsRoutes(
 
     const body = result.data;
 
-    const key = await validateApiKey(
-      body.apiKey,
-    );
+    const key = await validateApiKey(body.apiKey);
 
     if (!key) {
       return reply.status(401).send({
@@ -31,16 +27,15 @@ export async function eventsRoutes(
       });
     }
 
-    const enrichedEvents = body.events.map(
-      (event) =>
-        enrichEvent(event, {
-          websiteId: key.websiteId,
-          ip: req.ip,
-          userAgent:
-            req.headers['user-agent'] ??
-            'unknown',
-        }),
+    const enrichedEvents = body.events.map((event) =>
+      enrichEvent(event, {
+        websiteId: key.websiteId,
+        ip: req.ip,
+        userAgent: req.headers['user-agent'] ?? 'unknown',
+      }),
     );
+
+
 
     app.log.info(enrichedEvents);
 
