@@ -16,6 +16,11 @@ const worker = createEventsWorker(async (job) => {
       url: event.url,
       ip: event.ip,
       userAgent: event.userAgent,
+      visitorId: event.visitorId,
+
+      sessionId: event.sessionId,
+
+      userId: event.userId,
       browser: event.browser,
 
       browserVersion: event.browserVersion,

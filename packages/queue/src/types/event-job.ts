@@ -9,6 +9,12 @@ export interface EventJob {
   ip: string;
   userAgent: string;
 
+  visitorId: string;
+
+  sessionId: string;
+
+  userId: string | null;
+
   browser: string;
 
   browserVersion: string | null;

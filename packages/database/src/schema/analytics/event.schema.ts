@@ -23,6 +23,12 @@ export const event = pgTable(
 
     userAgent: text('user_agent').notNull(),
 
+    visitorId: text('visitor_id'),
+
+    sessionId: text('session_id'),
+
+    userId: text('user_id'),
+
     browser: text('browser'),
 
     browserVersion: text('browser_version'),

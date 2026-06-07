@@ -119,7 +119,6 @@ type RawRetentionCellRow = {
   users: string | number | null;
 };
 
-const SESSION_TIMEOUT_MINUTES = 30;
 const REALTIME_WINDOW_MINUTES = 5;
 
 function toNumber(value: string | number | null | undefined): number {
@@ -207,7 +206,7 @@ export async function getVisitorCount(
 
 export async function getActiveVisitorCount(websiteId: string): Promise<number> {
   const rows = await db.execute(
-    sql<RawCountRow>`select count(distinct "ip") as "count"
+    sql<RawCountRow>`select count(distinct "visitor_id") as "count"
       from "event"
       where "website_id" = ${websiteId}
         and "timestamp" >= now() - interval '${sql.raw(`${REALTIME_WINDOW_MINUTES} minutes`)}'`,
@@ -220,66 +219,42 @@ export async function getSessionMetrics(
   websiteId: string,
   range: AnalyticsDateRange,
 ): Promise<SessionMetricsRow> {
-  const from = range.from.toISOString();
-  const to = range.to.toISOString();
-
   const rows = await db.execute(
     sql<RawSessionMetricsRow>`
-      with ordered_events as (
+      with sessions as (
         select
-          "ip",
-          "timestamp",
-          "event",
-          lag("timestamp") over (
-            partition by "ip"
-            order by "timestamp"
-          ) as previous_timestamp
-        from "event"
-        where "website_id" = ${websiteId}
-          and "timestamp" >= ${from}
-          and "timestamp" <= ${to}
-      ),
-      marked_events as (
-        select
-          *,
-          case
-            when previous_timestamp is null
-              or "timestamp" - previous_timestamp >
-                 (${SESSION_TIMEOUT_MINUTES} * interval '1 minute')
-            then 1
-            else 0
-          end as is_new_session
-        from ordered_events
-      ),
-      sessionized_events as (
-        select
-          *,
-          sum(is_new_session) over (
-            partition by "ip"
-            order by "timestamp"
-          ) as session_index
-        from marked_events
-      ),
-      sessions as (
-        select
-          "ip",
-          session_index,
+          "visitor_id",
+          "session_id",
+
           min("timestamp") as started_at,
           max("timestamp") as ended_at,
+
           count(*) as event_count,
+
           count(*) filter (
             where "event" = 'page_view'
           ) as page_views
-        from sessionized_events
-        group by "ip", session_index
+
+        from "event"
+        where "website_id" = ${websiteId}
+          and "timestamp" >= ${range.from.toISOString()}
+          and "timestamp" <= ${range.to.toISOString()}
+          and "session_id" is not null
+
+        group by
+          "visitor_id",
+          "session_id"
       )
+
       select
         count(*) as "total",
+
         count(*) filter (
           where ended_at >=
             now() -
-            (${REALTIME_WINDOW_MINUTES} * interval '1 minute')
+            interval '${sql.raw(`${REALTIME_WINDOW_MINUTES} minutes`)}'
         ) as "active",
+
         coalesce(
           avg(
             extract(
@@ -290,6 +265,7 @@ export async function getSessionMetrics(
           ),
           0
         ) as "avgDuration",
+
         coalesce(
           (
             count(*) filter (
@@ -300,6 +276,7 @@ export async function getSessionMetrics(
           ) * 100,
           0
         ) as "bounceRate"
+
       from sessions
     `,
   );
@@ -313,6 +290,7 @@ export async function getSessionMetrics(
     bounceRate: toNumber(row?.bounceRate),
   };
 }
+
 export async function getTopCountries(
   websiteId: string,
   range: AnalyticsDateRange,
@@ -394,52 +372,37 @@ export async function getTimeline(
   interval: TimelineInterval,
 ): Promise<TimelineRow[]> {
   const bucket =
-    interval === "hour"
-      ? "hour"
-      : interval === "week"
-        ? "week"
-        : interval === "month"
-          ? "month"
-          : "day";
+    interval === 'hour'
+      ? 'hour'
+      : interval === 'week'
+        ? 'week'
+        : interval === 'month'
+          ? 'month'
+          : 'day';
 
   const bucketSql = sql.raw(`'${bucket}'`);
 
   const rows = await db.execute(
     sql<RawTimelineRow>`
-      with ordered_events as (
-        select
-          "ip",
-          "timestamp",
-          lag("timestamp") over (
-            partition by "ip"
-            order by "timestamp"
-          ) as previous_timestamp
-        from "event"
-        where "website_id" = ${websiteId}
-          and "timestamp" >= ${range.from.toISOString()}
-          and "timestamp" <= ${range.to.toISOString()}
-      ),
-      marked_events as (
-        select
-          *,
-          case
-            when previous_timestamp is null
-              or "timestamp" - previous_timestamp >
-                 (${SESSION_TIMEOUT_MINUTES} * interval '1 minute')
-            then 1
-            else 0
-          end as is_new_session
-        from ordered_events
-      )
-      select
-        date_trunc(${bucketSql}, "timestamp") as "date",
-        count(*) as "events",
-        count(distinct "ip") as "visitors",
-        sum(is_new_session) as "sessions"
-      from marked_events
-      group by date_trunc(${bucketSql}, "timestamp")
-      order by "date" asc
-    `,
+    select
+      date_trunc(${bucketSql}, "timestamp") as "date",
+
+      count(*) as "events",
+
+      count(distinct "visitor_id") as "visitors",
+
+      count(distinct "session_id") as "sessions"
+
+    from "event"
+
+    where "website_id" = ${websiteId}
+      and "timestamp" >= ${range.from.toISOString()}
+      and "timestamp" <= ${range.to.toISOString()}
+
+    group by date_trunc(${bucketSql}, "timestamp")
+
+    order by "date" asc
+  `,
   );
 
   return toRows<RawTimelineRow>(rows).map((row) => ({
@@ -651,34 +614,83 @@ export async function getRetentionCells(
   range: AnalyticsDateRange,
 ): Promise<RetentionCellRow[]> {
   const rows = await db.execute(
-    sql<RawRetentionCellRow>`with first_seen as (
-        select
-          "ip",
-          date_trunc('week', min("timestamp")) as cohort_week
-        from "event"
-        where "website_id" = ${websiteId}
-        group by "ip"
-      ),
-      weekly_activity as (
-        select distinct
-          event."ip",
-          first_seen.cohort_week,
-          date_trunc('week', event."timestamp") as activity_week
-        from "event"
-        join first_seen on first_seen."ip" = event."ip"
-        where event."website_id" = ${websiteId}
-          and event."timestamp" >= ${range.from.toISOString()}
-          and event."timestamp" <= ${range.to.toISOString()}
-      )
+    sql<RawRetentionCellRow>`
+    with first_seen as (
       select
-        cohort_week as "cohortWeek",
-        floor(extract(epoch from (activity_week - cohort_week)) / 604800)::int as "weekNumber",
-        count(distinct "ip") as "users"
-      from weekly_activity
-      where activity_week >= cohort_week
-        and floor(extract(epoch from (activity_week - cohort_week)) / 604800)::int between 0 and 12
-      group by cohort_week, "weekNumber"
-      order by cohort_week asc, "weekNumber" asc`,
+        "visitor_id",
+
+        date_trunc(
+          'week',
+          min("timestamp")
+        ) as cohort_week
+
+      from "event"
+
+      where "website_id" = ${websiteId}
+        and "visitor_id" is not null
+
+      group by "visitor_id"
+    ),
+
+    weekly_activity as (
+      select distinct
+        event."visitor_id",
+
+        first_seen.cohort_week,
+
+        date_trunc(
+          'week',
+          event."timestamp"
+        ) as activity_week
+
+      from "event"
+
+      join first_seen
+        on first_seen."visitor_id" =
+           event."visitor_id"
+
+      where event."website_id" = ${websiteId}
+        and event."timestamp" >= ${range.from.toISOString()}
+        and event."timestamp" <= ${range.to.toISOString()}
+    )
+
+    select
+      cohort_week as "cohortWeek",
+
+      floor(
+        extract(
+          epoch from (
+            activity_week -
+            cohort_week
+          )
+        ) / 604800
+      )::int as "weekNumber",
+
+      count(
+        distinct "visitor_id"
+      ) as "users"
+
+    from weekly_activity
+
+    where activity_week >= cohort_week
+
+      and floor(
+        extract(
+          epoch from (
+            activity_week -
+            cohort_week
+          )
+        ) / 604800
+      )::int between 0 and 12
+
+    group by
+      cohort_week,
+      "weekNumber"
+
+    order by
+      cohort_week asc,
+      "weekNumber" asc
+  `,
   );
 
   return toRows<RawRetentionCellRow>(rows).map((row) => ({

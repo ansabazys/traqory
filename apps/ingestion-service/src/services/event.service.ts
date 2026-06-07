@@ -3,6 +3,13 @@ export function enrichEvent(
     event: string;
     path: string;
     url: string;
+
+    visitorId: string;
+
+    sessionId: string;
+
+    userId?: string;
+
     timestamp: number;
   },
   metadata: {
@@ -34,6 +41,12 @@ export function enrichEvent(
     ip: metadata.ip,
 
     userAgent: metadata.userAgent,
+
+    visitorId: event.visitorId,
+
+    sessionId: event.sessionId,
+
+    userId: event.userId ?? null,
 
     browser: metadata.browser,
 
