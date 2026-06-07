@@ -145,8 +145,8 @@ function toRows<TRow>(rows: unknown): TRow[] {
 function scopedDateWhere(websiteId: string, range: AnalyticsDateRange) {
   return and(
     eq(event.websiteId, websiteId),
-    gte(event.timestamp, range.from),
-    lte(event.timestamp, range.to),
+    gte(event.timestamp, new Date(range.from.toISOString())),
+    lte(event.timestamp, new Date(range.to.toISOString())),
   );
 }
 
@@ -304,18 +304,13 @@ export async function getSessionMetrics(
     `,
   );
 
-  const row =
-    toRows<RawSessionMetricsRow>(rows)[0];
+  const row = toRows<RawSessionMetricsRow>(rows)[0];
 
   return {
     total: toNumber(row?.total),
     active: toNumber(row?.active),
-    avgDuration: toNumber(
-      row?.avgDuration,
-    ),
-    bounceRate: toNumber(
-      row?.bounceRate,
-    ),
+    avgDuration: toNumber(row?.avgDuration),
+    bounceRate: toNumber(row?.bounceRate),
   };
 }
 export async function getTopCountries(
@@ -398,12 +393,27 @@ export async function getTimeline(
   range: AnalyticsDateRange,
   interval: TimelineInterval,
 ): Promise<TimelineRow[]> {
+  const bucket =
+    interval === "hour"
+      ? "hour"
+      : interval === "week"
+        ? "week"
+        : interval === "month"
+          ? "month"
+          : "day";
+
+  const bucketSql = sql.raw(`'${bucket}'`);
+
   const rows = await db.execute(
-    sql<RawTimelineRow>`with ordered_events as (
+    sql<RawTimelineRow>`
+      with ordered_events as (
         select
           "ip",
           "timestamp",
-          lag("timestamp") over (partition by "ip" order by "timestamp") as previous_timestamp
+          lag("timestamp") over (
+            partition by "ip"
+            order by "timestamp"
+          ) as previous_timestamp
         from "event"
         where "website_id" = ${websiteId}
           and "timestamp" >= ${range.from.toISOString()}
@@ -414,20 +424,22 @@ export async function getTimeline(
           *,
           case
             when previous_timestamp is null
-              or "timestamp" - previous_timestamp > interval '${sql.raw(`${SESSION_TIMEOUT_MINUTES} minutes`)}'
+              or "timestamp" - previous_timestamp >
+                 (${SESSION_TIMEOUT_MINUTES} * interval '1 minute')
             then 1
             else 0
           end as is_new_session
         from ordered_events
       )
       select
-        date_trunc(${interval}, "timestamp") as "date",
+        date_trunc(${bucketSql}, "timestamp") as "date",
         count(*) as "events",
         count(distinct "ip") as "visitors",
         sum(is_new_session) as "sessions"
       from marked_events
-      group by date_trunc(${interval}, "timestamp")
-      order by "date" asc`,
+      group by date_trunc(${bucketSql}, "timestamp")
+      order by "date" asc
+    `,
   );
 
   return toRows<RawTimelineRow>(rows).map((row) => ({
@@ -444,9 +456,13 @@ export async function getTopEventsWithComparison(
   limit = 10,
 ): Promise<TopEventComparisonRow[]> {
   const previous = previousRange(range);
+
   const rows = await db.execute(
-    sql<RawTopEventComparisonRow>`with current_events as (
-        select "event", count(*) as "count"
+    sql<RawTopEventComparisonRow>`
+      with current_events as (
+        select
+          "event",
+          count(*) as "count"
         from "event"
         where "website_id" = ${websiteId}
           and "timestamp" >= ${range.from.toISOString()}
@@ -454,11 +470,13 @@ export async function getTopEventsWithComparison(
         group by "event"
       ),
       previous_events as (
-        select "event", count(*) as "count"
+        select
+          "event",
+          count(*) as "count"
         from "event"
         where "website_id" = ${websiteId}
-          and "timestamp" >= ${previous.from}
-          and "timestamp" < ${previous.to}
+          and "timestamp" >= ${previous.from.toISOString()}
+          and "timestamp" < ${previous.to.toISOString()}
         group by "event"
       )
       select
@@ -466,9 +484,11 @@ export async function getTopEventsWithComparison(
         current_events."count",
         coalesce(previous_events."count", 0) as "previousCount"
       from current_events
-      left join previous_events on previous_events."event" = current_events."event"
+      left join previous_events
+        on previous_events."event" = current_events."event"
       order by current_events."count" desc
-      limit ${limit}`,
+      limit ${limit}
+    `,
   );
 
   return toRows<RawTopEventComparisonRow>(rows).map((row) => ({

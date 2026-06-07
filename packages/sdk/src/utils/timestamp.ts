@@ -1,3 +1,3 @@
-export function now(): string {
-  return new Date().toISOString();
+export function now(): number {
+  return Date.now();
 }

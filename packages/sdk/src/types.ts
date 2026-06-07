@@ -15,7 +15,7 @@ export interface EventPayload {
 
   userId?: string;
 
-  timestamp: string;
+  timestamp: number;
 
   url: string;
   path: string;

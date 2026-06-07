@@ -9,13 +9,49 @@ export function enrichEvent(
     ip: string;
     userAgent: string;
     websiteId: string;
+    browser: string;
+
+    browserVersion: string | null;
+
+    os: string;
+
+    osVersion: string | null;
+
+    deviceType: string;
+
+    country: string | null;
+    region: string | null;
+    city: string | null;
+    latitude: number | null;
+    longitude: number | null;
   },
 ) {
   return {
     ...event,
+
     websiteId: metadata.websiteId,
+
     ip: metadata.ip,
+
     userAgent: metadata.userAgent,
-    receivedAt: new Date(),
+
+    browser: metadata.browser,
+
+    browserVersion: metadata.browserVersion,
+
+    os: metadata.os,
+
+    osVersion: metadata.osVersion,
+
+    deviceType: metadata.deviceType,
+
+    country: metadata.country,
+    region: metadata.region,
+    city: metadata.city,
+
+    latitude: metadata.latitude,
+    longitude: metadata.longitude,
+
+    receivedAt: Date.now(),
   };
 }

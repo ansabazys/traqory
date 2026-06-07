@@ -1,76 +1,62 @@
-import {
-  index,
-  pgTable,
-  text,
-  doublePrecision,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { index, pgTable, text, doublePrecision, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-import { website } from "./website.schema.js";
+import { website } from './website.schema.js';
 
 export const event = pgTable(
-  "event",
+  'event',
   {
-    id: uuid("id")
-      .defaultRandom()
-      .primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
 
-    websiteId: uuid("website_id")
+    websiteId: uuid('website_id')
       .notNull()
       .references(() => website.id, {
-        onDelete: "cascade",
+        onDelete: 'cascade',
       }),
 
-    event: text("event").notNull(),
+    event: text('event').notNull(),
 
-    path: text("path").notNull(),
+    path: text('path').notNull(),
 
-    url: text("url").notNull(),
+    url: text('url').notNull(),
 
-    ip: text("ip").notNull(),
+    ip: text('ip').notNull(),
 
-    userAgent: text("user_agent").notNull(),
+    userAgent: text('user_agent').notNull(),
 
-    country: text("country"),
+    browser: text('browser'),
 
-    region: text("region"),
+    browserVersion: text('browser_version'),
 
-    city: text("city"),
+    deviceType: text('device_type'),
 
-    latitude: doublePrecision("latitude"),
+    os: text('os'),
 
-    longitude: doublePrecision("longitude"),
+    osVersion: text('os_version'),
 
-    timestamp: timestamp("timestamp")
-      .notNull(),
+    country: text('country'),
 
-    receivedAt: timestamp("received_at")
-      .notNull(),
+    region: text('region'),
 
-    createdAt: timestamp("created_at")
-      .defaultNow()
-      .notNull(),
+    city: text('city'),
+
+    latitude: doublePrecision('latitude'),
+
+    longitude: doublePrecision('longitude'),
+
+    timestamp: timestamp('timestamp').notNull(),
+
+    receivedAt: timestamp('received_at').notNull(),
+
+    createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => [
-    index("event_website_id_idx").on(
-      table.websiteId,
-    ),
-    index("event_timestamp_idx").on(
-      table.timestamp,
-    ),
-    index("event_website_timestamp_idx").on(
-      table.websiteId,
-      table.timestamp,
-    ),
-    index("event_country_idx").on(
-      table.country,
-    ),
+    index('event_website_id_idx').on(table.websiteId),
+    index('event_timestamp_idx').on(table.timestamp),
+    index('event_website_timestamp_idx').on(table.websiteId, table.timestamp),
+    index('event_country_idx').on(table.country),
   ],
 );
 
-export type Event =
-  typeof event.$inferSelect;
+export type Event = typeof event.$inferSelect;
 
-export type NewEvent =
-  typeof event.$inferInsert;
+export type NewEvent = typeof event.$inferInsert;

@@ -1,34 +1,48 @@
-import "dotenv/config";
+import 'dotenv/config';
 
-import { createEvent } from "@traqory/database";
-import { createEventsWorker } from "@traqory/queue";
+import { createEvent } from '@traqory/database';
+import { createEventsWorker } from '@traqory/queue';
 
-const worker = createEventsWorker(
-  async (job) => {
-    console.log("JOB RECEIVED");
+const worker = createEventsWorker(async (job) => {
+  console.log('JOB RECEIVED');
 
-    for (const event of job.data) {
-      console.log("INSERTING EVENT");
+  for (const event of job.data) {
+    console.log('INSERTING EVENT');
 
-      await createEvent({
-        websiteId: event.websiteId,
-        event: event.event,
-        path: event.path,
-        url: event.url,
-        ip: event.ip,
-        userAgent: event.userAgent,
-        timestamp: new Date(event.timestamp * 1000),
-        receivedAt: new Date(event.receivedAt),
-      });
+    await createEvent({
+      websiteId: event.websiteId,
+      event: event.event,
+      path: event.path,
+      url: event.url,
+      ip: event.ip,
+      userAgent: event.userAgent,
+      browser: event.browser,
 
-      console.log("EVENT STORED");
-    }
-  },
-);
+      browserVersion: event.browserVersion,
 
-worker.on("failed", (job, err) => {
-  console.error("JOB FAILED");
+      os: event.os,
+
+      osVersion: event.osVersion,
+
+      deviceType: event.deviceType,
+      country: event.country,
+      region: event.region,
+      city: event.city,
+      latitude: event.latitude,
+      longitude: event.longitude,
+
+      timestamp: new Date(event.timestamp),
+
+      receivedAt: new Date(event.receivedAt),
+    });
+
+    console.log('EVENT STORED');
+  }
+});
+
+worker.on('failed', (job, err) => {
+  console.error('JOB FAILED');
   console.error(err);
 });
 
-console.log("Event processor started");
+console.log('Event processor started');

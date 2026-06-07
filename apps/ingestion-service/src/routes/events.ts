@@ -4,6 +4,8 @@ import { BatchSchema } from '../schemas/event.schema.js';
 import { validateApiKey } from '../services/api-key.service.js';
 import { enrichEvent } from '../services/event.service.js';
 import { eventsQueue } from '@traqory/queue';
+import { getGeo } from '../services/geo.service.js';
+import { parseUserAgent } from '../services/device.service.js';
 
 export async function eventsRoutes(app: FastifyInstance) {
   app.post('/', async (req, reply) => {
@@ -28,11 +30,38 @@ export async function eventsRoutes(app: FastifyInstance) {
       });
     }
 
+    const ip = req.ip === '127.0.0.1' || req.ip === '::1' ? '8.8.8.8' : req.ip;
+
+    const geo = await getGeo(ip);
+
+    const userAgent = req.headers['user-agent'] ?? 'unknown';
+
+    const device = parseUserAgent(userAgent);
+
     const enrichedEvents = body.events.map((event) =>
       enrichEvent(event, {
         websiteId: key.websiteId,
-        ip: req.ip,
+
+        ip,
+
         userAgent: req.headers['user-agent'] ?? 'unknown',
+
+        browser: device.browser,
+
+        browserVersion: device.browserVersion,
+
+        os: device.os,
+
+        osVersion: device.osVersion,
+
+        deviceType: device.deviceType,
+
+        country: geo.country,
+        region: geo.region,
+        city: geo.city,
+
+        latitude: geo.latitude,
+        longitude: geo.longitude,
       }),
     );
 
