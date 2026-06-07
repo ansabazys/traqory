@@ -1,0 +1,42 @@
+# Dependency folders
+node_modules/
+jspm_packages/
+
+# Development and configuration files
+.env
+.env.*
+.github/
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+# Testing and coverage tools
+tests/
+test/
+coverage/
+.nyc_output/
+*.spec.js
+*.test.js
+
+# Build sources (if you only want to ship compiled files)
+src/
+examples/
+demo/
+
+# Documentation and design assets
+docs/
+assets/
+images/
+*.png
+*.jpg
+*.svg
+
+# Config files not needed at runtime
+.gitignore
+.prettierrc
+.eslintrc*
+babel.config.js
+webpack.config.js
+tsconfig.json

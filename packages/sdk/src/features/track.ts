@@ -1,6 +1,7 @@
 import { client } from "../client";
+import { batcher } from "../core/batcher";
 import { createPayload } from "../core/payload";
-import { eventQueue } from "../core/queue";
+// import { eventQueue } from "../core/queue";
 
 export function track(
   eventName: string,
@@ -23,5 +24,5 @@ export function track(
     properties
   );
 
-  eventQueue.add(payload);
+  batcher.add(payload);
 }

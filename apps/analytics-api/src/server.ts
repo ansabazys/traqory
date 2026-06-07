@@ -1,5 +1,14 @@
+import "dotenv/config";
+
 import { app } from "./app.js";
 import { env } from "./config/env.js";
+
+console.log(
+  "DATABASE_URL LOADED:",
+  process.env.DATABASE_URL
+    ? "YES"
+    : "NO",
+);
 
 try {
   await app.listen({
