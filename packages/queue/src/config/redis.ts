@@ -1,3 +1,11 @@
-export const redisConnection = {
-  url: process.env.REDIS_URL!,
-};
+import IORedis from "ioredis";
+
+export function createRedis() {
+  return new IORedis(
+    process.env.REDIS_URL!,
+    {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+    },
+  );
+}

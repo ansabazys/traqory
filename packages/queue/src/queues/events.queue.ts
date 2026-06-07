@@ -1,10 +1,11 @@
 import { Queue } from "bullmq";
-import { redisConnection } from "../config/redis.js";
+
+import { createRedis } from "../config/redis.js";
 
 export const eventsQueue = new Queue(
   "events",
   {
-    connection: redisConnection,
+    connection: createRedis(),
     defaultJobOptions: {
       attempts: 3,
       removeOnComplete: 1000,

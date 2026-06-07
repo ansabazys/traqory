@@ -9,6 +9,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "bullmq": "^5.78.0"
+    "bullmq": "^5.78.0",
+    "ioredis": "5.10.1"
   }
 }

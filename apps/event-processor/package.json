@@ -8,6 +8,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@traqory/database": "workspace:*",
     "@traqory/queue": "workspace:*"
   },
   "devDependencies": {
