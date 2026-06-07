@@ -63,3 +63,50 @@ export async function sendBatch(events: EventPayload[]): Promise<void> {
     clearTimeout(timeout);
   }
 }
+
+export function sendBeaconBatch(
+  events: EventPayload[],
+): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    !navigator.sendBeacon
+  ) {
+    return false;
+  }
+
+  const { endpoint, apiKey } =
+    client.getConfig();
+
+  const payload = {
+    apiKey,
+    events: events.map((event) => ({
+      event: event.event,
+
+      path: event.path,
+      url: event.url,
+
+      timestamp: event.timestamp,
+
+      visitorId: event.visitorId,
+      sessionId: event.sessionId,
+      userId: event.userId,
+
+      referrer: event.referrer,
+      title: event.title,
+
+      properties: event.properties,
+    })),
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(payload)],
+    {
+      type: 'application/json',
+    },
+  );
+
+  return navigator.sendBeacon(
+    endpoint,
+    blob,
+  );
+}
