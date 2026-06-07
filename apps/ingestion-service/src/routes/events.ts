@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify';
 import { BatchSchema } from '../schemas/event.schema.js';
 import { validateApiKey } from '../services/api-key.service.js';
 import { enrichEvent } from '../services/event.service.js';
+import { enqueueEvents } from '../services/queue.service.js';
 
 export async function eventsRoutes(app: FastifyInstance) {
   app.post('/', async (req, reply) => {
@@ -35,7 +36,7 @@ export async function eventsRoutes(app: FastifyInstance) {
       }),
     );
 
-
+    await enqueueEvents(enrichedEvents);
 
     app.log.info(enrichedEvents);
 
