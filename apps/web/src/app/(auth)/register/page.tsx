@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useRegister } from "@/hooks/use-register";
@@ -145,10 +145,10 @@ export default function RegisterPage() {
           <div className="flex-grow border-t border-[#27272a]" />
         </div>
 
-        <button className="w-full py-2.5 px-4 bg-[#18181b]/50 border border-[#27272a] text-white font-medium rounded-lg hover:bg-[#27272a] transition-colors flex items-center justify-center gap-3">
-          <Github className="w-5 h-5" />
+        {/* <button className="w-full py-2.5 px-4 bg-[#18181b]/50 border border-[#27272a] text-white font-medium rounded-lg hover:bg-[#27272a] transition-colors flex items-center justify-center gap-3">
+          <GitHub className="w-5 h-5" />
           GitHub
-        </button>
+        </button> */}
       </div>
 
       <p className="mt-8 text-center text-sm text-[#71717a] font-sans">
