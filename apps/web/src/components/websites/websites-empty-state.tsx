@@ -1,14 +1,14 @@
 "use client";
 
 import { Globe, Plus } from "lucide-react";
-import { motion, type Variants } from "motion/react";
+import { motion } from "motion/react";
 
 export function WebsitesEmptyState({
   onAddWebsite,
   variants,
 }: {
   onAddWebsite: () => void;
-  variants: Variants;
+  variants: Record<string, unknown>;
 }) {
   return (
     <motion.div

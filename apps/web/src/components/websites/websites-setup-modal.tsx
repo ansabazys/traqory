@@ -1,17 +1,8 @@
-"use client";
+'use client';
 
-import { Copy, X } from "lucide-react";
-import { type Website } from "@/components/websites/types";
-import { WebsitesModalShell } from "@/components/websites/websites-modal-shell";
-
-type WebsitesSetupModalProps = {
-  website: Website | null;
-  apiKey: string | null;
-  copiedKey: string | null;
-  onClose: () => void;
-  onCopyKey: () => void;
-  onCopyScript: () => void;
-};
+import { Copy, X } from 'lucide-react';
+import { type Website } from '@/components/websites/types';
+import { WebsitesModalShell } from '@/components/websites/websites-modal-shell';
 
 function buildTrackingScript(apiKey: string) {
   return `<script src="https://cdn.tracpy.com/script.js" data-key="${apiKey}"></script>`;
@@ -24,25 +15,25 @@ export function WebsitesSetupModal({
   onClose,
   onCopyKey,
   onCopyScript,
-}: WebsitesSetupModalProps) {
+}: {
+  website: Website | null;
+  apiKey: string | null;
+  copiedKey: string | null;
+  onClose: () => void;
+  onCopyKey: (apiKey: string) => void;
+  onCopyScript: (apiKey: string) => void;
+}) {
   return (
-    <WebsitesModalShell
-      open={Boolean(website)}
-      onClose={onClose}
-    >
+    <WebsitesModalShell open={Boolean(website)} onClose={onClose}>
       {website ? (
         <div>
           <div className="flex items-center justify-between border-b border-[#1a1a1a] p-5">
             <div>
-              <h2 className="text-sm font-semibold text-white">
-                Tracking Setup
-              </h2>
-
+              <h2 className="text-sm font-semibold text-white">Tracking Setup</h2>
               <p className="mt-1 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
                 {website.domain}
               </p>
             </div>
-
             <button
               type="button"
               onClick={onClose}
@@ -57,39 +48,29 @@ export function WebsitesSetupModal({
               <p className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
                 Instruction
               </p>
-
               <p className="text-sm text-[#d1d5db]">
-                Paste this script inside{" "}
-                <code className="font-mono text-white">
-                  &lt;head&gt;
-                </code>{" "}
+                Paste this script inside <code className="font-mono text-white">&lt;head&gt;</code>{' '}
                 of your website.
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
-                API Key
+                Project Key
               </p>
-
               <div className="flex items-center justify-between border border-[#1a1a1a] bg-[#111111] px-3 py-3">
-                <code className="text-sm text-white break-all">
-                  {apiKey ?? "No API key found"}
-                </code>
-
+                <code className="text-sm text-white">{apiKey ?? 'No API key available'}</code>
                 <button
                   type="button"
-                  disabled={!apiKey}
-                  onClick={onCopyKey}
-                  className="ml-3 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#d1d5db] disabled:opacity-50"
+                  onClick={() => {
+                    if (apiKey) {
+                      onCopyKey(apiKey);
+                    }
+                  }}
+                  className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#d1d5db]"
                 >
                   <Copy className="h-3.5 w-3.5" />
-
-                  <span>
-                    {copiedKey === `key-${website.id}`
-                      ? "Copied"
-                      : "Copy"}
-                  </span>
+                  <span>{copiedKey === `key-${website.id}` ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
             </div>
@@ -98,12 +79,9 @@ export function WebsitesSetupModal({
               <p className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
                 Script Snippet
               </p>
-
               <div className="border border-[#1a1a1a] bg-[#111111] p-4">
                 <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-[#d1d5db]">
-                  {apiKey
-                    ? buildTrackingScript(apiKey)
-                    : "// No API key found"}
+                  {buildTrackingScript(apiKey ?? 'No API key available')}
                 </pre>
               </div>
             </div>
@@ -112,17 +90,15 @@ export function WebsitesSetupModal({
           <div className="flex items-center justify-end gap-3 border-t border-[#1a1a1a] p-5">
             <button
               type="button"
-              disabled={!apiKey}
-              onClick={onCopyScript}
-              className="flex h-10 items-center gap-2 border border-[#1a1a1a] px-4 text-xs font-mono uppercase tracking-widest text-[#d1d5db] transition-colors hover:bg-[#111111] disabled:opacity-50"
+              onClick={() => {
+                if (apiKey) {
+                  onCopyScript(apiKey);
+                }
+              }}
+              className="flex h-10 items-center gap-2 border border-[#1a1a1a] px-4 text-xs font-mono uppercase tracking-widest text-[#d1d5db] transition-colors hover:bg-[#111111]"
             >
               <Copy className="h-3.5 w-3.5" />
-
-              <span>
-                {copiedKey === `script-${website.id}`
-                  ? "Copied"
-                  : "Copy Script"}
-              </span>
+              <span>{copiedKey === `script-${website.id}` ? 'Copied' : 'Copy Script'}</span>
             </button>
           </div>
         </div>

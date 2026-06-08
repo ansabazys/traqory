@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Activity,
@@ -9,11 +9,11 @@ import {
   RefreshCcw,
   Trash2,
   Wrench,
-} from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { WebsitesSparkline } from "@/components/websites/websites-sparkline";
-import { WebsitesStatusBadge } from "@/components/websites/websites-status-badge";
-import { type Website } from "@/components/websites/types";
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { WebsitesSparkline } from '@/components/websites/websites-sparkline';
+import { WebsitesStatusBadge } from '@/components/websites/websites-status-badge';
+import { type Website } from '@/components/websites/types';
 
 function formatCompactNumber(value: number) {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}m`;
@@ -25,7 +25,7 @@ function formatRelativeTime(timestamp: string) {
   const diff = Date.now() - new Date(timestamp).getTime();
   const minutes = Math.max(0, Math.floor(diff / (1000 * 60)));
 
-  if (minutes < 1) return "just now";
+  if (minutes < 1) return 'just now';
   if (minutes < 60) return `${minutes}m ago`;
 
   const hours = Math.floor(minutes / 60);
@@ -61,22 +61,22 @@ export function WebsitesCard({
 }) {
   const actions = [
     {
-      label: "View Analytics",
+      label: 'View Analytics',
       icon: <BarChart2 className="h-3.5 w-3.5" />,
       onClick: onViewAnalytics,
     },
-    { label: "View Events", icon: <Activity className="h-3.5 w-3.5" />, onClick: onViewEvents },
+    { label: 'View Events', icon: <Activity className="h-3.5 w-3.5" />, onClick: onViewEvents },
     {
-      label: "Copy Tracking Script",
+      label: 'Copy Tracking Script',
       icon: <Copy className="h-3.5 w-3.5" />,
       onClick: onCopyScript,
     },
     {
-      label: "Regenerate API Key",
+      label: 'Regenerate API Key',
       icon: <RefreshCcw className="h-3.5 w-3.5" />,
       onClick: onRegenerateApiKey,
     },
-    { label: "Delete Website", icon: <Trash2 className="h-3.5 w-3.5" />, onClick: onDeleteWebsite },
+    { label: 'Delete Website', icon: <Trash2 className="h-3.5 w-3.5" />, onClick: onDeleteWebsite },
   ];
 
   return (
@@ -93,14 +93,14 @@ export function WebsitesCard({
       initial="hidden"
       animate="show"
       exit={{ opacity: 0, y: 12 }}
-      whileHover={{ scale: 1.02, borderColor: "#2a2a2a" }}
+      whileHover={{ scale: 1.02, borderColor: '#2a2a2a' }}
       transition={{ duration: 0.22 }}
       onClick={onViewAnalytics}
       className="cursor-pointer border border-[#1a1a1a] bg-[#0a0a0a] p-5"
     >
       <div className="mb-5 flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          
+        
           <img
             src={`https://www.google.com/s2/favicons?domain=${website.domain}&sz=64`}
             alt={`${website.domain} favicon`}
@@ -109,7 +109,7 @@ export function WebsitesCard({
           <div>
             <div className="mb-1 flex items-center gap-3">
               <h2 className="text-sm font-semibold text-white">{website.name}</h2>
-              <WebsitesStatusBadge status={website.status ?? "no_data"} />
+              <WebsitesStatusBadge status={website.status} />
             </div>
             <p className="text-xs font-mono text-[#666666]">{website.domain}</p>
           </div>
@@ -163,7 +163,7 @@ export function WebsitesCard({
             Events / 24h
           </p>
           <p className="text-2xl font-semibold tracking-tight text-white">
-            {formatCompactNumber(website.events24h ?? 0 )}
+            {formatCompactNumber(website.events24h)}
           </p>
         </div>
         <div>
@@ -171,7 +171,7 @@ export function WebsitesCard({
             Active Users
           </p>
           <p className="text-2xl font-semibold tracking-tight text-white">
-            {formatCompactNumber(website.activeUsers ?? 0)}
+            {formatCompactNumber(website.activeUsers)}
           </p>
         </div>
         <div>
@@ -179,7 +179,9 @@ export function WebsitesCard({
             Last Active
           </p>
           <p className="text-xs font-mono text-[#d1d5db]">
-            {website.events24h === 0 ? "never" : formatRelativeTime(website.lastActive ?? "0")}
+            {website.events24h === 0 || !website.lastActive
+              ? 'never'
+              : formatRelativeTime(website.lastActive)}
           </p>
         </div>
         <div>
@@ -187,11 +189,13 @@ export function WebsitesCard({
             Health
           </p>
           <p className="text-xs font-mono text-[#d1d5db]">
-            {website.status === "active"
-              ? "receiving events"
-              : website.status === "inactive"
-                ? "traffic stale"
-                : "setup pending"}
+            {website.status === 'ACTIVE'
+              ? 'receiving events'
+              : website.status === 'INACTIVE'
+                ? 'traffic stale'
+                : website.status === 'ARCHIVED'
+                  ? 'archived'
+                  : 'setup pending'}
           </p>
         </div>
       </div>
@@ -201,7 +205,7 @@ export function WebsitesCard({
           <p className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
             Recent Trend
           </p>
-          <WebsitesSparkline values={website.sparkline ?? []} />
+          <WebsitesSparkline values={website.sparkline} />
         </div>
 
         {copiedKey === website.id ? (
