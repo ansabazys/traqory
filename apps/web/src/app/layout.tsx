@@ -1,27 +1,14 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-} from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 
 import "./globals.css";
 
 import { QueryProvider } from "@/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "Traqory",
-  description:
-    "Modern website analytics platform",
+  description: "Modern website analytics platform",
 };
 
 export default function RootLayout({
@@ -30,9 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={GeistMono.variable}
+    >
       <body
-        className={`${geistSans.className} ${geistMono.variable} font-sans antialiased`}
+        className={`${GeistSans.className} font-sans antialiased`}
       >
         <QueryProvider>
           {children}
