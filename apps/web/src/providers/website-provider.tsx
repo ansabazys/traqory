@@ -7,8 +7,10 @@ import {
 
 import { WebsiteContext } from "@/contexts/website-context";
 import { useWebsites } from "@/hooks/use-websites";
+import { Website } from "@/types/website";
 
-import type { Website } from "@/contexts/website-context";
+const STORAGE_KEY =
+  "selectedWebsiteId";
 
 export function WebsiteProvider({
   children,
@@ -20,14 +22,40 @@ export function WebsiteProvider({
   const [website, setWebsite] =
     useState<Website | null>(null);
 
+  // Restore selected website
   useEffect(() => {
-    if (
-      !website &&
-      data?.length
-    ) {
-      setWebsite(data[0]);
+    if (!data?.length) return;
+
+    const storedId =
+      localStorage.getItem(
+        STORAGE_KEY,
+      );
+
+    if (storedId) {
+      const selected =
+        data.find(
+          (site) =>
+            site.id === storedId,
+        ) ?? null;
+
+      if (selected) {
+        setWebsite(selected);
+        return;
+      }
     }
-  }, [data, website]);
+
+    setWebsite(data[0]);
+  }, [data]);
+
+  // Persist selection
+  useEffect(() => {
+    if (!website) return;
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      website.id,
+    );
+  }, [website]);
 
   return (
     <WebsiteContext.Provider

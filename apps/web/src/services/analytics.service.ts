@@ -1,13 +1,38 @@
-import { analyticsApi } from '@/lib/api/client';
+import { analyticsApi } from "@/lib/api/client";
 
-export function getOverview(websiteId: string) {
-  return analyticsApi.get(`/v1/analytics/${websiteId}/overview`);
+export interface OverviewResponse {
+  totalSessions: number;
+  activeSessions: number;
+  avgDuration: string;
+
+  totalEvents: number;
+  pageViews: number;
+  clicks: number;
+  customEvents: number;
+
+  bounceRate: number;
+  engagedUsers: number;
+
+  totalPageViews: number;
+
+  countries: {
+    code: string;
+    requests: number;
+    rate: number;
+  }[];
+
+  mapMarkers: {
+    lat: number;
+    lng: number;
+    countryCode: string;
+    label: string;
+  }[];
 }
 
-export function getRealtime(websiteId: string) {
-  return analyticsApi.get(`/v1/analytics/${websiteId}/realtime`);
-}
-
-export function getDashboard(websiteId: string) {
-  return analyticsApi.get(`/v1/analytics/${websiteId}/dashboard`);
+export async function getOverview(
+  websiteId: string,
+) {
+  return analyticsApi.get<OverviewResponse>(
+    `/v1/analytics/${websiteId}/overview`,
+  );
 }
