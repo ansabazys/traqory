@@ -5,9 +5,9 @@ import { type WebsiteStatus } from "@/components/websites/types";
 export function WebsitesStatusBadge({
   status,
 }: {
-  status: WebsiteStatus;
+  status: WebsiteStatus | string;
 }) {
-  const config = {
+  const configMap = {
     ACTIVE: {
       label: "active",
       dot: "bg-[#22c55e]",
@@ -28,7 +28,12 @@ export function WebsitesStatusBadge({
       dot: "bg-[#f59e0b]",
       text: "text-[#d1d5db]",
     },
-  }[status];
+  } as const;
+
+  const config =
+    configMap[
+      status as keyof typeof configMap
+    ] ?? configMap.PENDING;
 
   return (
     <div
