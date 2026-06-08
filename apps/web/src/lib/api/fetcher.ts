@@ -4,7 +4,10 @@ export async function fetcher<T>(
 ): Promise<T> {
   const response = await fetch(
     input,
-    init,
+    {
+      ...init,
+      credentials: "include",
+    },
   );
 
   if (!response.ok) {

@@ -10,7 +10,7 @@ export async function login(
   data: LoginInput,
 ) {
   return authApi.post(
-    "/auth/login",
+    "/api/auth/sign-in/email",
     data,
   );
 }
@@ -23,11 +23,11 @@ export async function register(
   },
 ) {
   return authApi.post(
-    "/auth/register",
+    "/api/auth/sign-up/email",
     data,
   );
 }
 
-export async function me() {
-  return authApi.get("/auth/me");
+export async function getSession() {
+  return authApi.get("/api/auth/get-session");
 }
