@@ -1,21 +1,15 @@
-import { and, desc, eq } from "drizzle-orm";
-import { apiKey, db, website } from "@traqory/database";
+import { and, desc, eq } from 'drizzle-orm';
+import { apiKey, db, website } from '@traqory/database';
 
 export class ApiKeyRepository {
   async findByKey(key: string) {
-    const [record] = await db
-      .select()
-      .from(apiKey)
-      .where(eq(apiKey.key, key));
+    const [record] = await db.select().from(apiKey).where(eq(apiKey.key, key));
 
     return record ?? null;
   }
 
   async create(websiteId: string, key: string) {
-    const [record] = await db
-      .insert(apiKey)
-      .values({ websiteId, key })
-      .returning();
+    const [record] = await db.insert(apiKey).values({ websiteId, key }).returning();
 
     return record;
   }
@@ -24,6 +18,7 @@ export class ApiKeyRepository {
     return db
       .select({
         id: apiKey.id,
+        key: apiKey.key,
         websiteId: apiKey.websiteId,
         createdAt: apiKey.createdAt,
         lastUsedAt: apiKey.lastUsedAt,
@@ -33,7 +28,7 @@ export class ApiKeyRepository {
       .where(eq(apiKey.websiteId, websiteId))
       .orderBy(desc(apiKey.createdAt));
   }
-
+  
   async findByIdForOwner(id: string, ownerId: string) {
     const [record] = await db
       .select({ apiKey, website })
@@ -72,10 +67,7 @@ export class ApiKeyRepository {
         return null;
       }
 
-      await tx
-        .update(apiKey)
-        .set({ isActive: false })
-        .where(eq(apiKey.id, id));
+      await tx.update(apiKey).set({ isActive: false }).where(eq(apiKey.id, id));
 
       const [created] = await tx
         .insert(apiKey)

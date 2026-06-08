@@ -1,14 +1,14 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, type Variants} from "motion/react";
 
 export function WebsitesPageHeader({
   onAddWebsite,
   variants,
 }: {
   onAddWebsite: () => void;
-  variants: Record<string, unknown>;
+  variants: Variants;
 }) {
   return (
     <motion.div variants={variants} className="flex items-center justify-between">

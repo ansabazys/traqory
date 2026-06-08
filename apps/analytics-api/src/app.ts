@@ -18,7 +18,16 @@ app.decorateRequest('user', null);
 await app.register(cors, {
   origin: env.CORS_ORIGIN,
   credentials: true,
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
 });
+
 
 await app.register(errorMiddleware);
 await app.register(healthRoute);

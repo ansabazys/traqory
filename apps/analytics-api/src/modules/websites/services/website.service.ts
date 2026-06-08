@@ -2,10 +2,7 @@ import { HttpError } from '../../../lib/http-error.js';
 import { generateTrackingKey } from '../../../lib/api-key-generator.js';
 import { normalizeDomain } from '../../../lib/domain.js';
 import { slugify } from '../../../lib/slug.js';
-import type {
-  CreateWebsiteDto,
-  UpdateWebsiteDto,
-} from '../dto/website.dto.js';
+import type { CreateWebsiteDto, UpdateWebsiteDto } from '../dto/website.dto.js';
 import { apiKeyRepository } from '../repositories/api-key.repository.js';
 import { websiteRepository } from '../repositories/website.repository.js';
 
@@ -19,16 +16,26 @@ export class WebsiteService {
 
     const slug = await this.createUniqueSlug(payload.name);
 
-    const record = await websiteRepository.create({
+    const website = await websiteRepository.create({
       name: payload.name.trim(),
       domain,
       slug,
       ownerId,
     });
 
-    return record;
-  }
+    if (!website) {
+      throw new HttpError(500, 'Failed to create website');
+    }
 
+    const key = await this.createUniqueTrackingKey();
+
+    const apiKey = await apiKeyRepository.create(website.id, key);
+
+    return {
+      ...website,
+      apiKey,
+    };
+  }
   listWebsites(ownerId: string) {
     return websiteRepository.listByOwner(ownerId);
   }

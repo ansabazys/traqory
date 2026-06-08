@@ -4,25 +4,32 @@ import { Copy, X } from "lucide-react";
 import { type Website } from "@/components/websites/types";
 import { WebsitesModalShell } from "@/components/websites/websites-modal-shell";
 
+type WebsitesSetupModalProps = {
+  website: Website | null;
+  apiKey: string | null;
+  copiedKey: string | null;
+  onClose: () => void;
+  onCopyKey: () => void;
+  onCopyScript: () => void;
+};
+
 function buildTrackingScript(apiKey: string) {
   return `<script src="https://cdn.tracpy.com/script.js" data-key="${apiKey}"></script>`;
 }
 
 export function WebsitesSetupModal({
   website,
+  apiKey,
   copiedKey,
   onClose,
   onCopyKey,
   onCopyScript,
-}: {
-  website: Website | null;
-  copiedKey: string | null;
-  onClose: () => void;
-  onCopyKey: (website: Website) => void;
-  onCopyScript: (website: Website) => void;
-}) {
+}: WebsitesSetupModalProps) {
   return (
-    <WebsitesModalShell open={Boolean(website)} onClose={onClose}>
+    <WebsitesModalShell
+      open={Boolean(website)}
+      onClose={onClose}
+    >
       {website ? (
         <div>
           <div className="flex items-center justify-between border-b border-[#1a1a1a] p-5">
@@ -62,22 +69,19 @@ export function WebsitesSetupModal({
 
             <div>
               <p className="mb-2 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
-                Project Key
+                API Key
               </p>
 
               <div className="flex items-center justify-between border border-[#1a1a1a] bg-[#111111] px-3 py-3">
-                <code className="text-sm text-white">
-                  {website.apiKey ?? "No API key generated"}
+                <code className="text-sm text-white break-all">
+                  {apiKey ?? "No API key found"}
                 </code>
 
                 <button
                   type="button"
-                  disabled={!website.apiKey}
-                  onClick={() => {
-                    if (!website.apiKey) return;
-                    onCopyKey(website);
-                  }}
-                  className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#d1d5db] disabled:opacity-50"
+                  disabled={!apiKey}
+                  onClick={onCopyKey}
+                  className="ml-3 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#d1d5db] disabled:opacity-50"
                 >
                   <Copy className="h-3.5 w-3.5" />
 
@@ -97,11 +101,9 @@ export function WebsitesSetupModal({
 
               <div className="border border-[#1a1a1a] bg-[#111111] p-4">
                 <pre className="overflow-x-auto whitespace-pre-wrap text-sm text-[#d1d5db]">
-                  {website.apiKey
-                    ? buildTrackingScript(
-                        website.apiKey,
-                      )
-                    : "// Generate an API key first"}
+                  {apiKey
+                    ? buildTrackingScript(apiKey)
+                    : "// No API key found"}
                 </pre>
               </div>
             </div>
@@ -110,11 +112,8 @@ export function WebsitesSetupModal({
           <div className="flex items-center justify-end gap-3 border-t border-[#1a1a1a] p-5">
             <button
               type="button"
-              disabled={!website.apiKey}
-              onClick={() => {
-                if (!website.apiKey) return;
-                onCopyScript(website);
-              }}
+              disabled={!apiKey}
+              onClick={onCopyScript}
               className="flex h-10 items-center gap-2 border border-[#1a1a1a] px-4 text-xs font-mono uppercase tracking-widest text-[#d1d5db] transition-colors hover:bg-[#111111] disabled:opacity-50"
             >
               <Copy className="h-3.5 w-3.5" />
