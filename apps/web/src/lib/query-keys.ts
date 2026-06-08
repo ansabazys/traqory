@@ -8,6 +8,9 @@ export const queryKeys = {
 
     detail: (id: string) =>
       ["websites", id] as const,
+
+    apiKeys: (websiteId: string) =>
+      ["websites", websiteId, "apiKeys"] as const,
   },
 
   analytics: {
