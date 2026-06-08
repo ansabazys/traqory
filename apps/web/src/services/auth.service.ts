@@ -6,6 +6,30 @@ export interface LoginInput {
   password: string;
 }
 
+export interface SessionUser {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Session {
+  id: string;
+  token: string;
+  userId: string;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SessionResponse {
+  session: Session;
+  user: SessionUser;
+}
+
 export async function login(
   data: LoginInput,
 ) {
@@ -28,6 +52,14 @@ export async function register(
   );
 }
 
-export async function getSession() {
-  return authApi.get("/api/auth/get-session");
+export async function getSession(): Promise<SessionResponse> {
+  return authApi.get<SessionResponse>(
+    "/api/auth/get-session",
+  );
+}
+export function logout() {
+  return authApi.post(
+    "/api/auth/sign-out",
+    {},
+  );
 }
