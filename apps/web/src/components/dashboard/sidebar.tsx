@@ -55,7 +55,7 @@ export function Sidebar({
         <div className="flex h-full flex-col px-3 py-4">
           {/* TOP */}
           <div className="flex items-center justify-between mb-6">
-            {!collapsed && <span className="text-white font-semibold text-lg">traqory</span>}
+            {!collapsed && <span className="text-white font-semibold text-lg">tracpy</span>}
 
             {/* COLLAPSE BUTTON */}
             <button

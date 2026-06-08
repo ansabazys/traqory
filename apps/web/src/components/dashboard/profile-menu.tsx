@@ -18,9 +18,9 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { cn } from "@/lib/utils/cn";
 
-import { useSession } from "@/hooks/use-session";
-import { useLogout } from "@/hooks/use-logout";
-import { useProfileMenu } from "@/hooks/use-profile-menu";
+import { useSession } from "@/hooks/auth/use-session";
+import { useLogout } from "@/hooks//auth/use-logout";
+import { useProfileMenu } from "@/hooks/ui/use-profile-menu";
 
 export function ProfileMenu({
   collapsed,

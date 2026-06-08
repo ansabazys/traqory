@@ -6,11 +6,11 @@ import {
 } from "react";
 
 import { WebsiteContext } from "@/contexts/website-context";
-import { useWebsites } from "@/hooks/use-websites";
-import { Website } from "@/types/website";
+import { useWebsites } from "@/hooks/websites/use-websites";
+import { Website } from "@/components/websites/types";
 
 const STORAGE_KEY =
-  "selectedWebsiteId";
+  "traqory:selected-website";
 
 export function WebsiteProvider({
   children,

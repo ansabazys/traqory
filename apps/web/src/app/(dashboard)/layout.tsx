@@ -8,8 +8,8 @@ import { WebsiteProvider } from "@/providers/website-provider";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
 
-import { useSession } from "@/hooks/use-session";
-import { useSidebar } from "@/hooks/use-sidebar";
+import { useSession } from "@/hooks/auth/use-session";
+import { useSidebar } from "@/hooks/ui/use-sidebar";
 
 export default function DashboardLayout({
   children,

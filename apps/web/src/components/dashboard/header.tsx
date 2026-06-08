@@ -1,26 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-} from "lucide-react";
-import { WebsiteSwitcher } from "./website-switcher";
+import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 
-
-
-export function Header({
-  setOpen,
-}: {
-  setOpen: (v: boolean) => void;
-}) {
+export function Header({ setOpen }: { setOpen: (v: boolean) => void }) {
   const pathname = usePathname();
 
-  const pageTitles: Record<
-    string,
-    string
-  > = {
+  const pageTitles: Record<string, string> = {
     "/overview": "Overview",
     "/realtime": "Realtime",
     "/analytics": "Analytics",
@@ -36,35 +22,24 @@ export function Header({
       .filter(Boolean)
       .at(-1)
       ?.replace(/[-_]/g, " ")
-      .replace(
-        /\b\w/g,
-        (char) => char.toUpperCase(),
-      ) ??
+      .replace(/\b\w/g, (char) => char.toUpperCase()) ??
     "Dashboard";
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#1a1a1a] bg-[#050505] px-4 md:px-8">
+      {/* LEFT */}
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => setOpen(true)}
-          className="rounded-md p-2 hover:bg-[#111] md:hidden"
-        >
+        {/* MOBILE MENU */}
+        <button onClick={() => setOpen(true)} className="md:hidden p-2 rounded-md hover:bg-[#111]">
           <Menu className="h-5 w-5 text-white" />
         </button>
 
-        <h1 className="text-lg font-medium tracking-tight text-[#ededed]">
-          {pageTitle}
-        </h1>
-
-        {pathname !== "/websites" && (
-          <div className="hidden md:block">
-            <WebsiteSwitcher />
-          </div>
-        )}
+        <h1 className="text-lg font-medium tracking-tight text-[#ededed]">{pageTitle}</h1>
       </div>
 
+      {/* RIGHT */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center overflow-hidden border border-[#1a1a1a] bg-[#111111]">
+        <div className="flex items-center  border border-[#1a1a1a] bg-[#111111] overflow-hidden">
           <button className="px-3 py-1.5 text-xs text-[#888888] hover:text-[#ededed]">
             Last 24h
           </button>

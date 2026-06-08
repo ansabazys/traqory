@@ -1,6 +1,6 @@
 "use client";
 
-import { Website } from "@/types/website";
+import { Website } from "@/components/websites/types";
 import {
   createContext,
   useContext,
