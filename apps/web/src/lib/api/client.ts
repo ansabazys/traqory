@@ -27,6 +27,14 @@ function createApiClient(baseUrl: string) {
       fetcher<T>(`${baseUrl}${path}`, {
         method: 'DELETE',
       }),
+    patch: <T>(path: string, body: unknown) =>
+      fetcher<T>(`${baseUrl}${path}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }),
   };
 }
 

@@ -9,14 +9,15 @@ export interface Website {
 
 export async function getWebsites() {
   return websiteApi.get<Website[]>(
-    "/websites",
+    "/v1/websites",
   );
 }
+
 export async function getWebsite(
   websiteId: string,
 ) {
   return websiteApi.get(
-    `/websites/${websiteId}`,
+    `/v1/websites/${websiteId}`,
   );
 }
 
@@ -27,7 +28,7 @@ export async function createWebsite(
   },
 ) {
   return websiteApi.post(
-    "/websites",
+    "/v1/websites",
     data,
   );
 }

@@ -1,18 +1,13 @@
-import { analyticsApi } from "@/lib/api/client";
+import { analyticsApi } from '@/lib/api/client';
 
-
-export async function getOverview(
-  websiteId: string,
-) {
-  return analyticsApi.get(
-    `/analytics/${websiteId}/overview`,
-  );
+export function getOverview(websiteId: string) {
+  return analyticsApi.get(`/v1/analytics/${websiteId}/overview`);
 }
 
-export async function getEvents(
-  websiteId: string,
-) {
-  return analyticsApi.get(
-    `/analytics/${websiteId}/events`,
-  );
+export function getRealtime(websiteId: string) {
+  return analyticsApi.get(`/v1/analytics/${websiteId}/realtime`);
+}
+
+export function getDashboard(websiteId: string) {
+  return analyticsApi.get(`/v1/analytics/${websiteId}/dashboard`);
 }
