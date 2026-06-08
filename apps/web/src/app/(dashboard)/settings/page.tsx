@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { AccountActionsSection } from "@/components/settings/account-actions-section";
-import { AccountSettingsSection } from "@/components/settings/account-settings-section";
-import { DangerZoneSection } from "@/components/settings/danger-zone-section";
-import { PreferencesSettingsSection } from "@/components/settings/preferences-settings-section";
-import { SecuritySettingsSection } from "@/components/settings/security-settings-section";
-import { useAuthStore } from "@/lib/store/auth-store";
+import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
+import { AccountActionsSection } from '@/components/settings/account-actions-section';
+import { AccountSettingsSection } from '@/components/settings/account-settings-section';
+import { DangerZoneSection } from '@/components/settings/danger-zone-section';
+import { PreferencesSettingsSection } from '@/components/settings/preferences-settings-section';
+import { SecuritySettingsSection } from '@/components/settings/security-settings-section';
+import { useSession } from '@/hooks/auth/use-session';
 
 type SettingsState = {
   name: string;
@@ -20,8 +20,8 @@ type SettingsState = {
 };
 
 const initialSettings: SettingsState = {
-  name: "Ansab",
-  email: "ansab@email.com",
+  name: 'Ansab',
+  email: 'ansab@email.com',
   preferences: {
     emailNotifications: true,
     weeklySummary: false,
@@ -51,18 +51,20 @@ const sectionVariants = {
 };
 
 export default function SettingsPage() {
-  const user = useAuthStore((state) => state.user);
+  const { data: session } = useSession();
+  const user = session?.user;
+
   const [settings, setSettings] = useState<SettingsState>(() => ({
     ...initialSettings,
     name: user?.name ?? initialSettings.name,
     email: user?.email ?? initialSettings.email,
   }));
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const [passwordNotice, setPasswordNotice] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState('');
   const [deleteNotice, setDeleteNotice] = useState<string | null>(null);
   const [isDeleteConfirming, setIsDeleteConfirming] = useState(false);
 
@@ -93,23 +95,23 @@ export default function SettingsPage() {
   }, [deleteNotice]);
 
   function handleSaveAccount() {
-    setSaveNotice("Changes saved");
+    setSaveNotice('Changes saved');
   }
 
   function handleChangePassword() {
     if (!passwordReady) {
       setPasswordNotice(
         !passwordsMatch && confirmPassword.length > 0
-          ? "New password and confirmation must match"
-          : "Enter current password and use at least 8 characters",
+          ? 'New password and confirmation must match'
+          : 'Enter current password and use at least 8 characters',
       );
       return;
     }
 
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setPasswordNotice("Password updated");
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordNotice('Password updated');
   }
 
   function handleStartDelete() {
@@ -118,39 +120,39 @@ export default function SettingsPage() {
   }
 
   function handleCancelDelete() {
-    setDeleteConfirm("");
+    setDeleteConfirm('');
     setDeleteNotice(null);
     setIsDeleteConfirming(false);
   }
 
   function handleDeleteAccount() {
-    if (deleteConfirm !== "DELETE") {
+    if (deleteConfirm !== 'DELETE') {
       setDeleteNotice('Type "DELETE" to confirm');
       return;
     }
 
-    setDeleteConfirm("");
+    setDeleteConfirm('');
     setIsDeleteConfirming(false);
     setDeleteNotice(
-      "Account deletion confirmed. Wire this action to your backend before production.",
+      'Account deletion confirmed. Wire this action to your backend before production.',
     );
   }
 
   const topStats = [
     {
-      label: "Profile",
-      value: settings.name || "Pending",
+      label: 'Profile',
+      value: settings.name || 'Pending',
       detail: settings.email,
     },
     {
-      label: "Notifications",
+      label: 'Notifications',
       value: Object.values(settings.preferences).filter(Boolean).length,
-      detail: "enabled preferences",
+      detail: 'enabled preferences',
     },
     {
-      label: "Security",
-      value: isDeleteConfirming ? "Attention" : "Protected",
-      detail: isDeleteConfirming ? "delete confirmation open" : "account access stable",
+      label: 'Security',
+      value: isDeleteConfirming ? 'Attention' : 'Protected',
+      detail: isDeleteConfirming ? 'delete confirmation open' : 'account access stable',
     },
   ];
 
@@ -176,7 +178,7 @@ export default function SettingsPage() {
           <motion.div
             key={stat.label}
             variants={sectionVariants}
-            whileHover={{ y: -4, borderColor: "#2a2a2a" }}
+            whileHover={{ y: -4, borderColor: '#2a2a2a' }}
             transition={{ duration: 0.2 }}
             className="flex min-h-28 flex-col justify-between border border-[#1a1a1a] bg-[#0a0a0a] p-5"
           >
