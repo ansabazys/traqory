@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, type Variants } from "motion/react";
 import { WebsitesCard } from "@/components/websites/websites-card";
 import { type Website } from "@/components/websites/types";
 
@@ -29,7 +29,7 @@ export function WebsitesCardGrid({
   onRegenerateApiKey: (websiteId: string) => void;
   onDeleteWebsite: (websiteId: string) => void;
   onOpenSetup: (websiteId: string) => void;
-  variants: Record<string, unknown>;
+  variants: Variants;
 }) {
   return (
     <motion.div layout variants={variants} className="grid grid-cols-1 gap-4 xl:grid-cols-2">

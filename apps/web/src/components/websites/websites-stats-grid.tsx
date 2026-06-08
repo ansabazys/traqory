@@ -1,13 +1,13 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 
 export function WebsitesStatsGrid({
   stats,
   variants,
 }: {
   stats: { label: string; value: string | number; detail: string }[];
-  variants: Record<string, unknown>;
+  variants: Variants;
 }) {
   return (
     <motion.div variants={variants} className="grid grid-cols-1 gap-4 md:grid-cols-3">
