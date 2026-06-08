@@ -43,6 +43,13 @@
       "when": 1780852497439,
       "tag": "0005_tearful_wolverine",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780927518544,
+      "tag": "0006_giant_jigsaw",
+      "breakpoints": true
     }
   ]
 }
