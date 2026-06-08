@@ -10,12 +10,18 @@ export const website = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull().unique(),
     domain: text("domain").notNull().unique(),
+    description: text("description"),
+    status: text("status").$type<"ACTIVE" | "INACTIVE" | "PENDING" | "ARCHIVED">().default("ACTIVE").notNull(),
+    environment: text("environment").$type<"production" | "staging" | "development">().default("production").notNull(),
+    timezone: text("timezone").default("UTC"),
+    favicon: text("favicon"),
     ownerId: text("owner_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
+    deletedAt: timestamp("deleted_at"),
   },
   (table) => [
     index("website_owner_id_idx").on(table.ownerId),
