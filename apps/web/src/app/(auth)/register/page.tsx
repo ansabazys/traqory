@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { useRegister } from "@/hooks/use-register";
+import { useRegister } from "@/hooks/auth/use-register";
 
 export default function RegisterPage() {
   const [name, setName] = useState<string>("");

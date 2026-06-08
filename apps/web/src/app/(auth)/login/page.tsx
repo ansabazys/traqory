@@ -10,7 +10,7 @@ import {
   EyeOff,
 } from "lucide-react";
 
-import { useLogin } from "@/hooks/use-login";
+import { useLogin } from "@/hooks/auth/use-login";
 
 export default function LoginPage() {
   const router = useRouter();
