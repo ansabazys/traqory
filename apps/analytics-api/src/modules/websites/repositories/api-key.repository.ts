@@ -3,13 +3,23 @@ import { apiKey, db, website } from '@traqory/database';
 
 export class ApiKeyRepository {
   async findByKey(key: string) {
-    const [record] = await db.select().from(apiKey).where(eq(apiKey.key, key));
+    // In our new schema, findByKey is used for validating requests.
+    // The key passed is the hashed key or we look up by hashed key in findApiKeyByKey in the shared db package.
+    // Let's implement it to find by hashed key.
+    const [record] = await db.select().from(apiKey).where(eq(apiKey.hashedKey, key));
 
     return record ?? null;
   }
 
-  async create(websiteId: string, key: string) {
-    const [record] = await db.insert(apiKey).values({ websiteId, key }).returning();
+  async create(websiteId: string, hashedKey: string, prefix: string, name: string, createdBy: string, expiresAt: Date | null) {
+    const [record] = await db.insert(apiKey).values({
+      websiteId,
+      hashedKey,
+      prefix,
+      name,
+      createdBy,
+      expiresAt,
+    }).returning();
 
     return record;
   }
@@ -18,11 +28,16 @@ export class ApiKeyRepository {
     return db
       .select({
         id: apiKey.id,
-        key: apiKey.key,
         websiteId: apiKey.websiteId,
+        name: apiKey.name,
+        prefix: apiKey.prefix,
         createdAt: apiKey.createdAt,
+        updatedAt: apiKey.updatedAt,
+        expiresAt: apiKey.expiresAt,
         lastUsedAt: apiKey.lastUsedAt,
-        isActive: apiKey.isActive,
+        rotatedAt: apiKey.rotatedAt,
+        revokedAt: apiKey.revokedAt,
+        createdBy: apiKey.createdBy,
       })
       .from(apiKey)
       .where(eq(apiKey.websiteId, websiteId))
@@ -48,14 +63,14 @@ export class ApiKeyRepository {
 
     const [updated] = await db
       .update(apiKey)
-      .set({ isActive: false })
+      .set({ revokedAt: new Date() })
       .where(eq(apiKey.id, id))
       .returning();
 
     return updated ?? null;
   }
 
-  async rotateByIdForOwner(id: string, ownerId: string, newKey: string) {
+  async rotateByIdForOwner(id: string, ownerId: string, newHashedKey: string, newPrefix: string, expiresAt: Date | null) {
     return db.transaction(async (tx) => {
       const [record] = await tx
         .select({ apiKey, website })
@@ -67,17 +82,24 @@ export class ApiKeyRepository {
         return null;
       }
 
-      await tx.update(apiKey).set({ isActive: false }).where(eq(apiKey.id, id));
+      await tx.update(apiKey).set({ revokedAt: new Date() }).where(eq(apiKey.id, id));
 
       const [created] = await tx
         .insert(apiKey)
         .values({
           websiteId: record.apiKey.websiteId,
-          key: newKey,
+          hashedKey: newHashedKey,
+          prefix: newPrefix,
+          name: record.apiKey.name,
+          createdBy: ownerId,
+          expiresAt,
         })
         .returning();
 
-      return created ?? null;
+      return {
+        oldKey: record.apiKey,
+        newKey: created,
+      };
     });
   }
 }

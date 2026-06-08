@@ -10,6 +10,13 @@ export type AnalyticsDateRange = {
 
 export type TimelineInterval = 'hour' | 'day' | 'week' | 'month';
 
+type WebsiteOverviewRow = {
+  websiteId: string;
+  events24h: string | number | null;
+  activeUsers: string | number | null;
+  lastActive: Date | string | null;
+};
+
 export type EventListFilters = {
   page: number;
   limit: number;
@@ -734,4 +741,124 @@ export async function getWebsitePageViews(websiteId: string) {
     total: pages.reduce((sum, page) => sum + page.views, 0),
     pages,
   };
+}
+
+export async function getWebsitesOverviewStats(
+  websiteIds: string[],
+): Promise<Record<string, { events24h: number; activeUsers: number; lastActive: string | null }>> {
+  if (websiteIds.length === 0) return {};
+
+  const idsStr = websiteIds.map((id) => `'${id}'`).join(', ');
+  const rows = await db.execute(
+    sql`
+      SELECT 
+        website_id as "websiteId",
+        count(*) filter (where timestamp >= now() - interval '24 hours') as "events24h",
+        count(distinct visitor_id) filter (where timestamp >= now() - interval '30 minutes') as "activeUsers",
+        max(timestamp) as "lastActive"
+      FROM event
+      WHERE website_id IN (${sql.raw(idsStr)})
+      GROUP BY website_id
+    `,
+  );
+
+  const result: Record<
+    string,
+    { events24h: number; activeUsers: number; lastActive: string | null }
+  > = {};
+  const websiteRows = rows as unknown as WebsiteOverviewRow[];
+
+  for (const row of websiteRows) {
+    result[row.websiteId] = {
+      events24h: Number(row.events24h ?? 0),
+      activeUsers: Number(row.activeUsers ?? 0),
+      lastActive: row.lastActive ? new Date(row.lastActive).toISOString() : null,
+    };
+  }
+
+  for (const id of websiteIds) {
+    if (!result[id]) {
+      result[id] = {
+        events24h: 0,
+        activeUsers: 0,
+        lastActive: null,
+      };
+    }
+  }
+
+  return result;
+}
+
+export async function getWebsitesSparklines(
+  websiteIds: string[],
+): Promise<Record<string, number[]>> {
+  if (websiteIds.length === 0) {
+    return {};
+  }
+
+  const ids = sql.join(
+    websiteIds.map((id) => sql`${id}`),
+    sql`, `,
+  );
+
+  const rows = await db.execute(sql`
+  SELECT
+    "website_id" as "websiteId",
+    date_trunc('hour', "timestamp") as "hourBucket",
+    count(*) as "count"
+  FROM "event"
+  WHERE "website_id" IN (${ids})
+    AND "timestamp" >= now() - interval '24 hours'
+  GROUP BY
+    "website_id",
+    date_trunc('hour', "timestamp")
+  ORDER BY "hourBucket" ASC
+`);
+
+  console.log('SPARKLINE ROWS', JSON.stringify(rows, null, 2));
+
+  const result: Record<string, number[]> = {};
+
+  for (const id of websiteIds) {
+    result[id] = Array(24).fill(0);
+  }
+
+  const nowMs = Date.now();
+
+  for (const row of rows as unknown as Record<string, unknown>[]) {
+    const websiteId =
+      (row.websiteId as string | undefined) ?? (row.website_id as string | undefined);
+
+    const hourBucket =
+      (row.hourBucket as string | Date | undefined) ??
+      (row.hour_bucket as string | Date | undefined);
+
+    const count = Number((row.count as string | number | undefined) ?? 0);
+
+    if (!websiteId || !hourBucket) {
+      continue;
+    }
+
+    const bucketTime = new Date(hourBucket).getTime();
+
+    // const hoursAgo = Math.floor((nowMs - bucketTime) / (1000 * 60 * 60));
+
+    // const index = 23 - hoursAgo;
+
+    const daysAgo = Math.floor((nowMs - bucketTime) / (1000 * 60 * 60 * 24));
+
+    const index = 6 - daysAgo;
+
+    if (index >= 0 && index < 24) {
+      const sparkline = result[websiteId];
+
+      if (sparkline) {
+        sparkline[index] = count;
+      }
+    }
+  }
+
+  console.log('SPARKLINE RESULT', JSON.stringify(result, null, 2));
+
+  return result;
 }

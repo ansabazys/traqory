@@ -6,6 +6,7 @@ import {
   createApiKeySchema,
   createWebsiteSchema,
   updateWebsiteSchema,
+  listWebsitesSchema,
 } from "../validators/website.validator.js";
 
 type IdParams = {
@@ -24,7 +25,8 @@ export class WebsiteController {
   }
 
   listWebsites(request: FastifyRequest) {
-    return websiteService.listWebsites(request.user!.id);
+    const filters = listWebsitesSchema.parse(request.query);
+    return websiteService.listWebsites(request.user!.id, filters);
   }
 
   getWebsite(request: FastifyRequest<{ Params: IdParams }>) {
@@ -48,10 +50,11 @@ export class WebsiteController {
     request: FastifyRequest<{ Params: IdParams }>,
     reply: FastifyReply,
   ) {
-    validateBody(request, createApiKeySchema);
+    const payload = validateBody(request, createApiKeySchema);
     const apiKey = await websiteService.createApiKey(
       request.params.id,
       request.user!.id,
+      payload,
     );
 
     return reply.status(201).send(apiKey);
