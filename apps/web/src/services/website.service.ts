@@ -1,9 +1,17 @@
 import { websiteApi } from "@/lib/api/client";
 
-export async function getWebsites() {
-  return websiteApi.get("/websites");
+export interface Website {
+  id: string;
+  name: string;
+  domain: string;
+  apiKey: string;
 }
 
+export async function getWebsites() {
+  return websiteApi.get<Website[]>(
+    "/websites",
+  );
+}
 export async function getWebsite(
   websiteId: string,
 ) {
