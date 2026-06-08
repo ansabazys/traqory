@@ -1,16 +1,12 @@
 "use client";
 
+import { Website } from "@/types/website";
 import {
   createContext,
   useContext,
 } from "react";
 
-export interface Website {
-  id: string;
-  name: string;
-  domain: string;
-  apiKey: string;
-}
+
 
 interface WebsiteContextValue {
   website: Website | null;
