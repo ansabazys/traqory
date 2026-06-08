@@ -3,25 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Github } from "lucide-react";
-import { register } from "@/lib/api/services/auth.api";
 import { useRouter } from "next/navigation";
+
+import { useRegister } from "@/hooks/use-register";
 
 export default function RegisterPage() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
+  const registerMutation = useRegister();
+
   const handleRegister = async () => {
-    setLoading(true);
     setError(null);
 
     try {
-      await register({
+      await registerMutation.mutateAsync({
         name,
         email,
         password,
@@ -30,8 +31,6 @@ export default function RegisterPage() {
       router.push("/login");
     } catch {
       setError("Something went wrong");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -42,9 +41,16 @@ export default function RegisterPage() {
           <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
             <div className="w-3 h-3 bg-black rounded-sm" />
           </div>
-          <span className="font-sans font-medium text-white text-lg tracking-tight">tracpy</span>
+
+          <span className="font-sans font-medium text-white text-lg tracking-tight">
+            tracpy
+          </span>
         </div>
-        <h1 className="text-2xl font-sans font-medium text-white mb-2">Create an account</h1>
+
+        <h1 className="text-2xl font-sans font-medium text-white mb-2">
+          Create an account
+        </h1>
+
         <p className="text-[#a1a1aa] text-sm">
           Enter your information to get started analyzing your traffic.
         </p>
@@ -57,10 +63,13 @@ export default function RegisterPage() {
               First Name
             </label>
           </div>
+
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) =>
+              setName(e.target.value)
+            }
             placeholder="John"
             className="w-full px-4 py-2.5 bg-[#09090b]/50 border border-[#27272a] rounded-lg text-white placeholder:text-[#52525b] focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all font-mono text-sm"
           />
@@ -72,10 +81,13 @@ export default function RegisterPage() {
               Email Address
             </label>
           </div>
+
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
             placeholder="name@example.com"
             className="w-full px-4 py-2.5 active:bg-none bg-[#09090b]/50 border border-[#27272a] rounded-lg text-white placeholder:text-[#52525b] focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all font-mono text-sm"
           />
@@ -87,34 +99,50 @@ export default function RegisterPage() {
               Password
             </label>
           </div>
+
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
             placeholder="••••••••"
             className="w-full px-4 py-2.5 bg-[#09090b]/50 border border-[#27272a] rounded-lg text-white placeholder:text-[#52525b] focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all font-mono text-sm"
           />
-          <p className="text-xs text-[#52525b] mt-1">Must be at least 8 characters long.</p>
+
+          <p className="text-xs text-[#52525b] mt-1">
+            Must be at least 8 characters long.
+          </p>
         </div>
 
-        {/* Error (no UI change, just text) */}
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm">
+            {error}
+          </p>
+        )}
 
         <button
           onClick={handleRegister}
-          disabled={loading}
+          disabled={
+            registerMutation.isPending
+          }
           className="w-full py-2.5 px-4 bg-white text-black font-medium rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 group mt-6 disabled:opacity-50"
         >
-          {loading ? "Creating..." : "Create Account"}
+          {registerMutation.isPending
+            ? "Creating..."
+            : "Create Account"}
+
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
         </button>
 
         <div className="relative flex items-center py-4">
-          <div className="flex-grow border-t border-[#27272a]"></div>
+          <div className="flex-grow border-t border-[#27272a]" />
+
           <span className="flex-shrink-0 mx-4 text-[#52525b] text-xs uppercase tracking-wider bg-black px-2">
             Or continue with
           </span>
-          <div className="flex-grow border-t border-[#27272a]"></div>
+
+          <div className="flex-grow border-t border-[#27272a]" />
         </div>
 
         <button className="w-full py-2.5 px-4 bg-[#18181b]/50 border border-[#27272a] text-white font-medium rounded-lg hover:bg-[#27272a] transition-colors flex items-center justify-center gap-3">
