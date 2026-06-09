@@ -30,7 +30,27 @@ export async function eventsRoutes(app: FastifyInstance) {
       });
     }
 
-    const ip = req.ip === '127.0.0.1' || req.ip === '::1' ? '8.8.8.8' : req.ip;
+    const forwardedFor = req.headers['x-forwarded-for'];
+
+    let ip = req.ip;
+
+    if (typeof forwardedFor === 'string') {
+      const firstIp = forwardedFor.split(',')[0];
+
+      if (firstIp) {
+        ip = firstIp.trim();
+      }
+    }
+
+    if (ip === '127.0.0.1' || ip === '::1') {
+      ip = '8.8.8.8';
+    }
+
+    app.log.info({
+      requestIp: req.ip,
+      forwardedFor,
+      resolvedIp: ip,
+    });
 
     const geo = await getGeo(ip);
 
@@ -44,14 +64,12 @@ export async function eventsRoutes(app: FastifyInstance) {
 
         ip,
 
-        userAgent: req.headers['user-agent'] ?? 'unknown',
+        userAgent,
 
         browser: device.browser,
-
         browserVersion: device.browserVersion,
 
         os: device.os,
-
         osVersion: device.osVersion,
 
         deviceType: device.deviceType,
