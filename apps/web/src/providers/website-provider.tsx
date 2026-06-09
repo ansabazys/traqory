@@ -1,67 +1,102 @@
-"use client";
+'use client';
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from 'react';
 
-import { WebsiteContext } from "@/contexts/website-context";
-import { useWebsites } from "@/hooks/websites/use-websites";
-import { Website } from "@/components/websites/types";
+import { WebsiteContext } from '@/contexts/website-context';
+import { useWebsites } from '@/hooks/websites/use-websites';
 
 const STORAGE_KEY =
-  "traqory:selected-website";
+  'traqory:selected-website';
 
 export function WebsiteProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data } = useWebsites();
+  const {
+    data: websites = [],
+    isLoading,
+  } = useWebsites();
 
-  const [website, setWebsite] =
-    useState<Website | null>(null);
+  const [
+    selectedWebsiteId,
+    setSelectedWebsiteId,
+  ] = useState('');
 
-  // Restore selected website
   useEffect(() => {
-    if (!data?.length) return;
+    if (!websites.length) {
+      setSelectedWebsiteId('');
+      return;
+    }
 
     const storedId =
       localStorage.getItem(
         STORAGE_KEY,
       );
 
-    if (storedId) {
-      const selected =
-        data.find(
-          (site) =>
-            site.id === storedId,
-        ) ?? null;
+    const storedWebsite =
+      websites.find(
+        (website) =>
+          website.id === storedId,
+      );
 
-      if (selected) {
-        setWebsite(selected);
-        return;
-      }
+    if (storedWebsite) {
+      setSelectedWebsiteId(
+        storedWebsite.id,
+      );
+      return;
     }
 
-    setWebsite(data[0]);
-  }, [data]);
+    const latestWebsite = [
+      ...websites,
+    ].sort(
+      (a, b) =>
+        new Date(
+          b.createdAt,
+        ).getTime() -
+        new Date(
+          a.createdAt,
+        ).getTime(),
+    )[0];
 
-  // Persist selection
+    setSelectedWebsiteId(
+      latestWebsite?.id ?? '',
+    );
+  }, [websites]);
+
   useEffect(() => {
-    if (!website) return;
+    if (!selectedWebsiteId) {
+      return;
+    }
 
     localStorage.setItem(
       STORAGE_KEY,
-      website.id,
+      selectedWebsiteId,
     );
-  }, [website]);
+  }, [selectedWebsiteId]);
+
+  const selectedWebsite =
+    useMemo(
+      () =>
+        websites.find(
+          (website) =>
+            website.id ===
+            selectedWebsiteId,
+        ) ?? null,
+      [
+        websites,
+        selectedWebsiteId,
+      ],
+    );
 
   return (
     <WebsiteContext.Provider
       value={{
-        website,
-        setWebsite,
+        websites,
+        isLoading,
+        selectedWebsiteId,
+        selectedWebsite,
+        setSelectedWebsiteId,
       }}
     >
       {children}

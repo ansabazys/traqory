@@ -13,6 +13,10 @@ import { WebsitesStatsGrid } from '@/components/websites/websites-stats-grid';
 import { useWebsites } from '@/hooks/websites/use-websites';
 import { useCreateWebsite } from '@/hooks/websites/use-create-website';
 import { useDeleteWebsite } from '@/hooks/websites/use-delete-website';
+import { WebsitesRegenerateApiKeyModal } from '@/components/websites/websites-regenerate-modal';
+import { Website } from '@/components/websites/types';
+import { useRotateApiKey } from '@/hooks/websites/use-rotate-api-key';
+import { WebsitesDeleteModal } from '@/components/websites/websites-delete-modal';
 
 const pageVariants = {
   hidden: {},
@@ -32,7 +36,7 @@ function formatCompactNumber(value: number) {
 export default function WebsitesPage() {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const { data: websites = [] } = useWebsites();
+  const { data: websites = [], refetch, isFetching } = useWebsites();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [setupWebsiteId, setSetupWebsiteId] = useState<string | null>(null);
@@ -44,10 +48,16 @@ export default function WebsitesPage() {
     websiteId: string;
     key: string;
   } | null>(null);
+  const [isRegenerateModalOpen, setIsRegenerateModalOpen] = useState(false);
+  const [deleteWebsite, setDeleteWebsite] = useState<Website | null>(null);
 
   const createWebsiteMutation = useCreateWebsite();
 
   const deleteWebsiteMutation = useDeleteWebsite();
+
+  const rotateApiKeyMutation = useRotateApiKey();
+
+  const [regenerateWebsite, setRegenerateWebsite] = useState<Website | null>(null);
 
   useEffect(() => {
     if (!copiedKey) return;
@@ -123,16 +133,6 @@ export default function WebsitesPage() {
     setOpenMenuId(null);
   }
 
-  async function handleDeleteWebsite(websiteId: string) {
-    await deleteWebsiteMutation.mutateAsync(websiteId);
-
-    setOpenMenuId(null);
-
-    if (setupWebsiteId === websiteId) {
-      setSetupWebsiteId(null);
-    }
-  }
-
   const topStats = [
     { label: 'Projects', value: websites.length, detail: `${totals.activeCount} active` },
     {
@@ -154,6 +154,8 @@ export default function WebsitesPage() {
         <WebsitesStatsGrid stats={topStats} variants={pageVariants} />
         <WebsitesPageHeader
           onAddWebsite={() => setIsAddModalOpen(true)}
+          onRefresh={() => refetch()}
+          isRefreshing={isFetching}
           variants={{
             hidden: { opacity: 0, y: 18 },
             show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
@@ -181,7 +183,15 @@ export default function WebsitesPage() {
             onViewEvents={(website) => router.push(`/events?website=${website.id}`)}
             onCopyScript={handleCopyScript}
             onRegenerateApiKey={handleRegenerateApiKey}
-            onDeleteWebsite={handleDeleteWebsite}
+            onDeleteWebsite={(websiteId) => {
+              const website = websites.find((w) => w.id === websiteId);
+
+              if (website) {
+                setDeleteWebsite(website);
+              }
+
+              setOpenMenuId(null);
+            }}
             onOpenSetup={setSetupWebsiteId}
             variants={pageVariants}
           />
@@ -200,18 +210,88 @@ export default function WebsitesPage() {
 
       <WebsitesSetupModal
         website={setupWebsite}
-        apiKey={currentApiKey!}
+        apiKey={currentApiKey ?? ''}
+        isNewKey={generatedApiKey?.websiteId === setupWebsite?.id}
         copiedKey={copiedKey}
-        onClose={() => setSetupWebsiteId(null)}
+        onClose={() => {
+          setGeneratedApiKey(null);
+          setSetupWebsiteId(null);
+        }}
         onCopyKey={(apiKey) => {
           navigator.clipboard.writeText(apiKey);
-          setCopiedKey('key');
+          setCopiedKey(`key-${setupWebsite?.id}`);
         }}
         onCopyScript={(apiKey) => {
           navigator.clipboard.writeText(
             `<script src="https://cdn.tracpy.com/script.js" data-key="${apiKey}"></script>`,
           );
-          setCopiedKey('script');
+          setCopiedKey(`script-${setupWebsite?.id}`);
+        }}
+        onRegenerateApiKey={() => {
+          if (!setupWebsite) return;
+
+          setRegenerateWebsite(setupWebsite);
+
+          setSetupWebsiteId(null); // close setup modal
+
+          setIsRegenerateModalOpen(true);
+        }}
+      />
+
+      <WebsitesRegenerateApiKeyModal
+        open={isRegenerateModalOpen}
+        websiteName={regenerateWebsite?.name}
+        onClose={() => {
+          setRegenerateWebsite(null);
+          setIsRegenerateModalOpen(false);
+        }}
+        onConfirm={async () => {
+          if (!regenerateWebsite?.apiKeyId) return;
+
+          try {
+            const response = await rotateApiKeyMutation.mutateAsync({
+              apiKeyId: regenerateWebsite.apiKeyId,
+              websiteId: regenerateWebsite.id,
+            });
+
+            setGeneratedApiKey({
+              websiteId: regenerateWebsite.id,
+              key: response.key,
+            });
+
+            setIsRegenerateModalOpen(false);
+            setSetupWebsiteId(regenerateWebsite.id);
+            setRegenerateWebsite(null);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
+        isPending={rotateApiKeyMutation.isPending}
+      />
+
+      <WebsitesDeleteModal
+        open={Boolean(deleteWebsite)}
+        websiteName={deleteWebsite?.name}
+        isPending={deleteWebsiteMutation.isPending}
+        onClose={() => {
+          setDeleteWebsite(null);
+        }}
+        onConfirm={async () => {
+          if (!deleteWebsite) {
+            return;
+          }
+
+          try {
+            await deleteWebsiteMutation.mutateAsync(deleteWebsite.id);
+
+            if (setupWebsiteId === deleteWebsite.id) {
+              setSetupWebsiteId(null);
+            }
+
+            setDeleteWebsite(null);
+          } catch (error) {
+            console.error(error);
+          }
         }}
       />
     </>

@@ -1,13 +1,17 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import { motion, type Variants } from 'motion/react';
 
 export function WebsitesPageHeader({
   onAddWebsite,
+  onRefresh,
+  isRefreshing,
   variants,
 }: {
   onAddWebsite: () => void;
+  onRefresh: () => void;
+  isRefreshing: boolean;
   variants: Variants;
 }) {
   return (
@@ -21,14 +25,26 @@ export function WebsitesPageHeader({
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={onAddWebsite}
-        className="flex h-10 items-center gap-2 border border-[#1a1a1a] bg-[#0a0a0a] px-4 text-xs font-mono uppercase tracking-widest text-white transition-colors hover:border-[#2a2a2a] hover:bg-[#111111]"
-      >
-        <Plus className="h-3.5 w-3.5" />
-        <span>Add Website</span>
-      </button>
+      <div className="flex gap-5">
+        <button
+          onClick={onRefresh}
+          disabled={isRefreshing}
+           className="flex h-10 items-center gap-2 border border-[#1a1a1a] bg-[#0a0a0a] px-4 text-xs font-mono uppercase tracking-widest text-white transition-colors hover:border-[#2a2a2a] hover:bg-[#111111]"
+        >
+          
+          <RefreshCw className="h-3.5 w-3.5" />
+          <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onAddWebsite}
+          className="flex h-10 items-center gap-2 border border-[#1a1a1a] bg-[#0a0a0a] px-4 text-xs font-mono uppercase tracking-widest text-white transition-colors hover:border-[#2a2a2a] hover:bg-[#111111]"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Website</span>
+        </button>
+      </div>
     </motion.div>
   );
 }

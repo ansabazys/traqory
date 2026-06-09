@@ -79,6 +79,20 @@ export function WebsitesCard({
     { label: 'Delete Website', icon: <Trash2 className="h-3.5 w-3.5" />, onClick: onDeleteWebsite },
   ];
 
+  function getHealthLabel(website: Website) {
+    if (!website.lastActive) {
+      return 'setup pending';
+    }
+
+    const minutesAgo = (Date.now() - new Date(website.lastActive).getTime()) / 1000 / 60;
+
+    if (minutesAgo <= 30) {
+      return 'receiving events';
+    }
+
+    return 'traffic stale';
+  }
+
   return (
     <motion.div
       layout
@@ -100,7 +114,6 @@ export function WebsitesCard({
     >
       <div className="mb-5 flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-        
           <img
             src={`https://www.google.com/s2/favicons?domain=${website.domain}&sz=64`}
             alt={`${website.domain} favicon`}
@@ -188,15 +201,7 @@ export function WebsitesCard({
           <p className="mb-1 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
             Health
           </p>
-          <p className="text-xs font-mono text-[#d1d5db]">
-            {website.status === 'ACTIVE'
-              ? 'receiving events'
-              : website.status === 'INACTIVE'
-                ? 'traffic stale'
-                : website.status === 'ARCHIVED'
-                  ? 'archived'
-                  : 'setup pending'}
-          </p>
+          <p className="text-xs font-mono text-[#d1d5db]">{getHealthLabel(website)}</p>
         </div>
       </div>
 
