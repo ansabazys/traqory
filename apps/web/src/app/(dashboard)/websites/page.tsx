@@ -202,18 +202,25 @@ export default function WebsitesPage() {
 
       <WebsitesSetupModal
         website={setupWebsite}
-        apiKey={currentApiKey!}
+        apiKey={currentApiKey ?? ''}
+        isNewKey={generatedApiKey?.websiteId === setupWebsite?.id}
         copiedKey={copiedKey}
-        onClose={() => setSetupWebsiteId(null)}
+        onClose={() => {
+          setGeneratedApiKey(null);
+          setSetupWebsiteId(null);
+        }}
         onCopyKey={(apiKey) => {
           navigator.clipboard.writeText(apiKey);
-          setCopiedKey('key');
+          setCopiedKey(`key-${setupWebsite?.id}`);
         }}
         onCopyScript={(apiKey) => {
           navigator.clipboard.writeText(
             `<script src="https://cdn.tracpy.com/script.js" data-key="${apiKey}"></script>`,
           );
-          setCopiedKey('script');
+          setCopiedKey(`script-${setupWebsite?.id}`);
+        }}
+        onRegenerateApiKey={() => {
+          console.log('regenerate', setupWebsite?.id);
         }}
       />
     </>

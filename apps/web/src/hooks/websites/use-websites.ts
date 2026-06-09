@@ -15,7 +15,7 @@ export function useWebsites(
     queryFn: () => getWebsites(filters),
 
     // refresh every 30s
-    refetchInterval: 30_000,
+    // refetchInterval: 30_000,
 
     // refresh when tab regains focus
     refetchOnWindowFocus: true,
