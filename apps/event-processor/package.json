@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@traqory/database": "workspace:*",
-    "@traqory/queue": "workspace:*"
+    "@traqory/queue": "workspace:*",
+    "fastify": "^5.8.5"
   },
   "devDependencies": {
     "@types/node": "^20.19.41",
