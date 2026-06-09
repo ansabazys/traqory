@@ -30,23 +30,15 @@ export function WebsitesSetupModal({
   onCopyScript,
   onRegenerateApiKey,
 }: WebsitesSetupModalProps) {
-  const hasFullApiKey =
-    isNewKey &&
-    !!apiKey &&
-    !apiKey.includes('****');
+  const hasFullApiKey = isNewKey && !!apiKey && !apiKey.includes('****');
 
   return (
-    <WebsitesModalShell
-      open={Boolean(website)}
-      onClose={onClose}
-    >
+    <WebsitesModalShell open={Boolean(website)} onClose={onClose}>
       {website ? (
         <div>
           <div className="flex items-center justify-between border-b border-[#1a1a1a] p-5">
             <div>
-              <h2 className="text-sm font-semibold text-white">
-                Tracking Setup
-              </h2>
+              <h2 className="text-sm font-semibold text-white">Tracking Setup</h2>
 
               <p className="mt-1 text-[10px] font-mono uppercase tracking-widest text-[#666666]">
                 {website.domain}
@@ -72,10 +64,7 @@ export function WebsitesSetupModal({
                 {hasFullApiKey ? (
                   <>
                     Paste this script inside{' '}
-                    <code className="font-mono text-white">
-                      &lt;head&gt;
-                    </code>{' '}
-                    of your website.
+                    <code className="font-mono text-white">&lt;head&gt;</code> of your website.
                   </>
                 ) : (
                   <>
@@ -91,32 +80,43 @@ export function WebsitesSetupModal({
                 Project Key
               </p>
 
-              <div className={`flex items-center justify-between border ${ !hasFullApiKey && "border-[#1a1a1a]"}  bg-[#111111] px-3 py-3`}>
-                <code className="text-sm text-white">
-                  {apiKey ?? 'No API key available'}
-                </code>
+              <div className="border border-[#1a1a1a] bg-[#111111]">
+                <div className="overflow-x-auto border-b border-[#1a1a1a] p-3">
+                  <code className="font-mono text-sm text-white whitespace-nowrap">
+                    {apiKey ?? 'No API key available'}
+                  </code>
+                </div>
 
                 {hasFullApiKey && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (apiKey) {
-                        onCopyKey(apiKey);
-                      }
-                    }}
-                    className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#d1d5db]"
-                  >
-                    <Copy className="h-3.5 w-3.5" />
+                  <div className="flex justify-end p-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (apiKey) {
+                          onCopyKey(apiKey);
+                        }
+                      }}
+                      className="flex items-center gap-2 px-2 py-1 text-xs font-mono uppercase tracking-widest text-[#d1d5db] hover:text-white"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
 
-                    <span>
-                      {copiedKey === `key-${website.id}`
-                        ? 'Copied'
-                        : 'Copy'}
-                    </span>
-                  </button>
+                      <span>{copiedKey === `key-${website.id}` ? 'Copied' : 'Copy Key'}</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
+
+            {hasFullApiKey && apiKey && (
+              <div className="rounded border border-yellow-500/30 bg-yellow-500/10 p-3">
+                <p className="text-xs font-medium text-yellow-400">Save this API key now.</p>
+
+                <p className="mt-1 text-xs text-yellow-200/80">
+                  For security reasons, this key will only be shown once. After you close this
+                  window, you won't be able to view it again.
+                </p>
+              </div>
+            )}
 
             {hasFullApiKey && apiKey && (
               <div>
@@ -146,11 +146,7 @@ export function WebsitesSetupModal({
               >
                 <Copy className="h-3.5 w-3.5" />
 
-                <span>
-                  {copiedKey === `script-${website.id}`
-                    ? 'Copied'
-                    : 'Copy Script'}
-                </span>
+                <span>{copiedKey === `script-${website.id}` ? 'Copied' : 'Copy Script'}</span>
               </button>
             ) : (
               <button

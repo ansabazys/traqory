@@ -13,6 +13,9 @@ import { WebsitesStatsGrid } from '@/components/websites/websites-stats-grid';
 import { useWebsites } from '@/hooks/websites/use-websites';
 import { useCreateWebsite } from '@/hooks/websites/use-create-website';
 import { useDeleteWebsite } from '@/hooks/websites/use-delete-website';
+import { WebsitesRegenerateApiKeyModal } from '@/components/websites/websites-regenerate-modal';
+import { Website } from '@/components/websites/types';
+import { useRotateApiKey } from '@/hooks/websites/use-rotate-api-key';
 
 const pageVariants = {
   hidden: {},
@@ -44,10 +47,15 @@ export default function WebsitesPage() {
     websiteId: string;
     key: string;
   } | null>(null);
+  const [isRegenerateModalOpen, setIsRegenerateModalOpen] = useState(false);
 
   const createWebsiteMutation = useCreateWebsite();
 
   const deleteWebsiteMutation = useDeleteWebsite();
+
+  const rotateApiKeyMutation = useRotateApiKey();
+
+  const [regenerateWebsite, setRegenerateWebsite] = useState<Website | null>(null);
 
   useEffect(() => {
     if (!copiedKey) return;
@@ -220,8 +228,45 @@ export default function WebsitesPage() {
           setCopiedKey(`script-${setupWebsite?.id}`);
         }}
         onRegenerateApiKey={() => {
-          console.log('regenerate', setupWebsite?.id);
+          if (!setupWebsite) return;
+
+          setRegenerateWebsite(setupWebsite);
+
+          setSetupWebsiteId(null); // close setup modal
+
+          setIsRegenerateModalOpen(true);
         }}
+      />
+
+      <WebsitesRegenerateApiKeyModal
+        open={isRegenerateModalOpen}
+        websiteName={regenerateWebsite?.name}
+        onClose={() => {
+          setRegenerateWebsite(null);
+          setIsRegenerateModalOpen(false);
+        }}
+        onConfirm={async () => {
+          if (!regenerateWebsite?.apiKeyId) return;
+
+          try {
+            const response = await rotateApiKeyMutation.mutateAsync({
+              apiKeyId: regenerateWebsite.apiKeyId,
+              websiteId: regenerateWebsite.id,
+            });
+
+            setGeneratedApiKey({
+              websiteId: regenerateWebsite.id,
+              key: response.key,
+            });
+
+            setIsRegenerateModalOpen(false);
+            setSetupWebsiteId(regenerateWebsite.id);
+            setRegenerateWebsite(null);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
+        isPending={rotateApiKeyMutation.isPending}
       />
     </>
   );

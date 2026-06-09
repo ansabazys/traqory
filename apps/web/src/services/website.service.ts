@@ -5,10 +5,9 @@ import type {
   ApiKey,
 } from "@/components/websites/types";
 
-export interface CreateApiKeyResponse {
-  apiKey: string; // plaintext returned once
-  key: ApiKey;
-}
+export type CreateApiKeyResponse = ApiKey & {
+  key: string;
+};
 
 export type GetWebsitesFilters = {
   search?: string;
