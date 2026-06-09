@@ -1,5 +1,12 @@
-import { relations } from "drizzle-orm";
-import { index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
+import {
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 import { apiKey } from "./api-key.schema.js";
 
@@ -7,31 +14,83 @@ export const website = pgTable(
   "website",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+
     name: text("name").notNull(),
-    slug: text("slug").notNull().unique(),
-    domain: text("domain").notNull().unique(),
+
+    slug: text("slug").notNull(),
+
+    domain: text("domain").notNull(),
+
     description: text("description"),
-    status: text("status").$type<"ACTIVE" | "INACTIVE" | "PENDING" | "ARCHIVED">().default("ACTIVE").notNull(),
-    environment: text("environment").$type<"production" | "staging" | "development">().default("production").notNull(),
+
+    status: text("status")
+      .$type<
+        "ACTIVE" | "INACTIVE" | "PENDING" | "ARCHIVED"
+      >()
+      .default("ACTIVE")
+      .notNull(),
+
+    environment: text("environment")
+      .$type<
+        "production" | "staging" | "development"
+      >()
+      .default("production")
+      .notNull(),
+
     timezone: text("timezone").default("UTC"),
+
     favicon: text("favicon"),
+
     ownerId: text("owner_id").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+
+    createdAt: timestamp("created_at")
+      .defaultNow()
+      .notNull(),
+
     updatedAt: timestamp("updated_at")
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
+
     deletedAt: timestamp("deleted_at"),
   },
   (table) => [
-    index("website_owner_id_idx").on(table.ownerId),
-    index("website_owner_created_at_idx").on(table.ownerId, table.createdAt),
+    index("website_owner_id_idx").on(
+      table.ownerId,
+    ),
+
+    index("website_owner_created_at_idx").on(
+      table.ownerId,
+      table.createdAt,
+    ),
+
+    uniqueIndex(
+      "website_slug_active_unique",
+    )
+      .on(table.slug)
+      .where(
+        sql`${table.deletedAt} IS NULL`,
+      ),
+
+    uniqueIndex(
+      "website_domain_active_unique",
+    )
+      .on(table.domain)
+      .where(
+        sql`${table.deletedAt} IS NULL`,
+      ),
   ],
 );
 
-export const websiteRelations = relations(website, ({ many }) => ({
-  apiKeys: many(apiKey),
-}));
+export const websiteRelations = relations(
+  website,
+  ({ many }) => ({
+    apiKeys: many(apiKey),
+  }),
+);
 
-export type Website = typeof website.$inferSelect;
-export type NewWebsite = typeof website.$inferInsert;
+export type Website =
+  typeof website.$inferSelect;
+
+export type NewWebsite =
+  typeof website.$inferInsert;
