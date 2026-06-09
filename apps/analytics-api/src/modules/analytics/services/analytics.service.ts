@@ -1,6 +1,9 @@
 import {
   getActivePages,
+  getActiveSessionCount,
   getActiveVisitorCount,
+  getClickCount,
+  getCustomEventCount,
   getEventTypes,
   getPageViewCount,
   getRealtimeEvents,
@@ -18,7 +21,7 @@ import {
   listEvents,
   type AnalyticsDateRange,
   type TimelineInterval,
-} from "@traqory/database";
+} from '@traqory/database';
 
 import type {
   BrowserDto,
@@ -34,10 +37,10 @@ import type {
   RetentionResponseDto,
   TimelineItemDto,
   TopEventDto,
-} from "../dto/analytics.dto.js";
-import { resolveDateRange } from "../utils/date-range.js";
-import { resolvePagination } from "../utils/pagination.js";
-import { summarizeBrowsers, summarizeDevices } from "../utils/user-agent.js";
+} from '../dto/analytics.dto.js';
+import { resolveDateRange } from '../utils/date-range.js';
+import { resolvePagination } from '../utils/pagination.js';
+import { summarizeBrowsers, summarizeDevices } from '../utils/user-agent.js';
 
 const REALTIME_WINDOW_SECONDS = 300;
 const RETENTION_WEEKS = 12;
@@ -145,43 +148,71 @@ export async function getOverviewAnalytics(
   query: DateRangeQuery,
 ): Promise<OverviewResponseDto> {
   const range = resolveDateRange(query);
+
   const [
     visitors,
     activeVisitors,
     sessions,
+    activeSessions,
     pageViews,
+    clicks,
+    customEvents,
     events,
     topCountries,
     topRegions,
     worldMap,
   ] = await Promise.all([
     getVisitorCount(websiteId, range),
+
     getActiveVisitorCount(websiteId),
+
     getSessionMetrics(websiteId, range),
+
+    getActiveSessionCount(websiteId),
+
     getPageViewCount(websiteId, range),
+
+    getClickCount(websiteId, range),
+
+    getCustomEventCount(websiteId, range),
+
     getTotalEvents(websiteId, range),
+
     getTopCountries(websiteId, range),
+
     getTopRegions(websiteId, range),
+
     getWorldMap(websiteId, range),
   ]);
 
   return {
     visitors,
     activeVisitors,
+
     sessions: sessions.total,
+
+    activeSessions,
+
     pageViews,
+
+    clicks,
+
+    customEvents,
+
     events,
+
     bounceRate: Number(sessions.bounceRate.toFixed(2)),
+
     avgSessionDuration: Number(sessions.avgDuration.toFixed(2)),
+
     topCountries: mapDimensionRows(topCountries),
+
     topRegions: mapDimensionRows(topRegions),
+
     worldMap,
   };
 }
-
-export async function getRealtimeAnalytics(
-  websiteId: string,
-): Promise<RealtimeResponseDto> {
+export async function getRealtimeAnalytics(websiteId: string): Promise<RealtimeResponseDto> {
   const realtimeRange = {
     from: new Date(Date.now() - REALTIME_WINDOW_SECONDS * 1000),
     to: new Date(),
@@ -206,7 +237,7 @@ export async function getRealtimeAnalytics(
     topRegions: mapDimensionRows(topRegions),
     events: events.map((row) => ({
       timestamp: row.timestamp.toISOString(),
-      country: row.country ?? "Unknown",
+      country: row.country ?? 'Unknown',
       path: row.path,
       event: row.event,
     })),
@@ -232,7 +263,7 @@ export async function getDashboardAnalytics(
     getTotalEvents(websiteId, range),
     getActiveVisitorCount(websiteId),
     getSessionMetrics(websiteId, range),
-    getTimeline(websiteId, range, "day"),
+    getTimeline(websiteId, range, 'day'),
     getTopEventAnalytics(websiteId, range),
     getTopPages(websiteId, range),
     getCountrySummaries(websiteId, range),
@@ -276,10 +307,7 @@ export async function getTopEventAnalytics(
   }));
 }
 
-export async function getTopPageAnalytics(
-  websiteId: string,
-  query: DateRangeQuery,
-) {
+export async function getTopPageAnalytics(websiteId: string, query: DateRangeQuery) {
   return getTopPages(websiteId, resolveDateRange(query));
 }
 
@@ -340,10 +368,7 @@ export async function getEventsExplorer(
   };
 }
 
-export async function getEventTypesAnalytics(
-  websiteId: string,
-  query: DateRangeQuery,
-) {
+export async function getEventTypesAnalytics(websiteId: string, query: DateRangeQuery) {
   const rows = await getEventTypes(websiteId, resolveDateRange(query));
   return rows.map((row) => ({ event: row.value, count: row.count }));
 }
@@ -352,10 +377,7 @@ export async function getActivePageAnalytics(websiteId: string) {
   return getActivePages(websiteId);
 }
 
-export async function getSessionAnalytics(
-  websiteId: string,
-  query: DateRangeQuery,
-) {
+export async function getSessionAnalytics(websiteId: string, query: DateRangeQuery) {
   const sessions = await getSessionMetrics(websiteId, resolveDateRange(query));
 
   return {

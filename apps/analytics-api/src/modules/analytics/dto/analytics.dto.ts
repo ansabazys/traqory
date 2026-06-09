@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const dateRangeQuerySchema = z.object({
   from: z.string().date().optional(),
@@ -6,7 +6,7 @@ export const dateRangeQuerySchema = z.object({
 });
 
 export const timelineQuerySchema = dateRangeQuerySchema.extend({
-  interval: z.enum(["hour", "day", "week", "month"]).default("day"),
+  interval: z.enum(['hour', 'day', 'week', 'month']).default('day'),
 });
 
 export const eventsQuerySchema = dateRangeQuerySchema.extend({
@@ -37,7 +37,10 @@ export type OverviewResponseDto = {
   visitors: number;
   activeVisitors: number;
   sessions: number;
+  activeSessions: number;
   pageViews: number;
+  clicks: number;
+  customEvents: number;
   events: number;
   bounceRate: number;
   avgSessionDuration: number;

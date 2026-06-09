@@ -51,7 +51,7 @@ export default function DashboardLayout({
 
   return (
     <WebsiteProvider>
-      <div className="h-screen overflow-hidden bg-[#0a0a0a]">
+      <div className="h-screen overflow-hidden bg-[#050505]">
         <Sidebar
           collapsed={collapsed}
           setCollapsed={setCollapsed}

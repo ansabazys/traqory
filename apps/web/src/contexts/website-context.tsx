@@ -12,12 +12,12 @@ export interface WebsiteContextValue {
 
   isLoading: boolean;
 
-  selectedWebsiteId: string | 'all';
+  selectedWebsiteId: string;
 
   selectedWebsite: Website | null;
 
   setSelectedWebsiteId: (
-    websiteId: string | 'all',
+    websiteId: string,
   ) => void;
 }
 

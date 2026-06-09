@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, lte, ne, sql } from 'drizzle-orm';
 
 import { db } from '../client.js';
 import { event } from '../schema/analytics/event.schema.js';
@@ -296,6 +296,51 @@ export async function getSessionMetrics(
     avgDuration: toNumber(row?.avgDuration),
     bounceRate: toNumber(row?.bounceRate),
   };
+}
+
+export async function getActiveSessionCount(websiteId: string): Promise<number> {
+  const rows = await db.execute(
+    sql<RawCountRow>`
+      select count(distinct "session_id") as "count"
+      from "event"
+      where "website_id" = ${websiteId}
+        and "session_id" is not null
+        and "timestamp" >= now() - interval '${sql.raw(`${REALTIME_WINDOW_MINUTES} minutes`)}'
+    `,
+  );
+
+  return toNumber(toRows<RawCountRow>(rows)[0]?.count);
+}
+
+export async function getClickCount(websiteId: string, range: AnalyticsDateRange): Promise<number> {
+  return getSingleCount(
+    db
+      .select({
+        count: count(),
+      })
+      .from(event)
+      .where(and(scopedDateWhere(websiteId, range), eq(event.event, 'click'))),
+  );
+}
+
+export async function getCustomEventCount(
+  websiteId: string,
+  range: AnalyticsDateRange,
+): Promise<number> {
+  return getSingleCount(
+    db
+      .select({
+        count: count(),
+      })
+      .from(event)
+      .where(
+        and(
+          scopedDateWhere(websiteId, range),
+          ne(event.event, 'page_view'),
+          ne(event.event, 'click'),
+        ),
+      ),
+  );
 }
 
 export async function getTopCountries(
@@ -825,16 +870,12 @@ export async function getWebsitesSparklines(
 
   for (const row of rows as unknown as Record<string, unknown>[]) {
     const websiteId =
-      (row.websiteId as string | undefined) ??
-      (row.website_id as string | undefined);
+      (row.websiteId as string | undefined) ?? (row.website_id as string | undefined);
 
     const dayBucket =
-      (row.dayBucket as string | Date | undefined) ??
-      (row.day_bucket as string | Date | undefined);
+      (row.dayBucket as string | Date | undefined) ?? (row.day_bucket as string | Date | undefined);
 
-    const count = Number(
-      (row.count as string | number | undefined) ?? 0,
-    );
+    const count = Number((row.count as string | number | undefined) ?? 0);
 
     if (!websiteId || !dayBucket) {
       continue;
@@ -842,10 +883,7 @@ export async function getWebsitesSparklines(
 
     const bucketTime = new Date(dayBucket).getTime();
 
-    const daysAgo = Math.floor(
-      (nowMs - bucketTime) /
-        (1000 * 60 * 60 * 24),
-    );
+    const daysAgo = Math.floor((nowMs - bucketTime) / (1000 * 60 * 60 * 24));
 
     const index = 6 - daysAgo;
 

@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { WebsiteContext } from '@/contexts/website-context';
 import { useWebsites } from '@/hooks/websites/use-websites';
 
-const STORAGE_KEY = 'traqory:selected-website';
+const STORAGE_KEY =
+  'traqory:selected-website';
 
 export function WebsiteProvider({
   children,
@@ -17,34 +18,57 @@ export function WebsiteProvider({
     isLoading,
   } = useWebsites();
 
-  const [selectedWebsiteId, setSelectedWebsiteId] = useState<
-    string | 'all'
-  >('all');
+  const [
+    selectedWebsiteId,
+    setSelectedWebsiteId,
+  ] = useState('');
 
   useEffect(() => {
     if (!websites.length) {
+      setSelectedWebsiteId('');
       return;
     }
 
     const storedId =
-      localStorage.getItem(STORAGE_KEY);
+      localStorage.getItem(
+        STORAGE_KEY,
+      );
 
-    if (
-      storedId &&
-      (storedId === 'all' ||
-        websites.some(
-          (website) =>
-            website.id === storedId,
-        ))
-    ) {
-      setSelectedWebsiteId(storedId);
+    const storedWebsite =
+      websites.find(
+        (website) =>
+          website.id === storedId,
+      );
+
+    if (storedWebsite) {
+      setSelectedWebsiteId(
+        storedWebsite.id,
+      );
       return;
     }
 
-    setSelectedWebsiteId('all');
+    const latestWebsite = [
+      ...websites,
+    ].sort(
+      (a, b) =>
+        new Date(
+          b.createdAt,
+        ).getTime() -
+        new Date(
+          a.createdAt,
+        ).getTime(),
+    )[0];
+
+    setSelectedWebsiteId(
+      latestWebsite?.id ?? '',
+    );
   }, [websites]);
 
   useEffect(() => {
+    if (!selectedWebsiteId) {
+      return;
+    }
+
     localStorage.setItem(
       STORAGE_KEY,
       selectedWebsiteId,
@@ -52,13 +76,18 @@ export function WebsiteProvider({
   }, [selectedWebsiteId]);
 
   const selectedWebsite =
-    selectedWebsiteId === 'all'
-      ? null
-      : websites.find(
+    useMemo(
+      () =>
+        websites.find(
           (website) =>
             website.id ===
             selectedWebsiteId,
-        ) ?? null;
+        ) ?? null,
+      [
+        websites,
+        selectedWebsiteId,
+      ],
+    );
 
   return (
     <WebsiteContext.Provider

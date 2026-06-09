@@ -1,34 +1,43 @@
 import { analyticsApi } from "@/lib/api/client";
 
 export interface OverviewResponse {
-  totalSessions: number;
-  activeSessions: number;
-  avgDuration: string;
+  visitors: number;
+  activeVisitors: number;
 
-  totalEvents: number;
+  sessions: number;
+  activeSessions: number;
+
   pageViews: number;
+
   clicks: number;
+
   customEvents: number;
 
+  events: number;
+
   bounceRate: number;
-  engagedUsers: number;
 
-  totalPageViews: number;
+  avgSessionDuration: number;
 
-  countries: {
-    code: string;
-    requests: number;
-    rate: number;
+  topCountries: {
+    name: string;
+    count: number;
   }[];
 
-  mapMarkers: {
-    lat: number;
-    lng: number;
-    countryCode: string;
-    label: string;
+  topRegions: {
+    name: string;
+    count: number;
+  }[];
+
+  worldMap: {
+    country: string;
+    region: string;
+    city: string;
+    latitude: number | null;
+    longitude: number | null;
+    count: number;
   }[];
 }
-
 export async function getOverview(
   websiteId: string,
 ) {
