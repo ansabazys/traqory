@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { WebsiteProvider } from "@/providers/website-provider";
+import { WebsiteProvider } from '@/providers/website-provider';
 
-import { Sidebar } from "@/components/dashboard/sidebar";
-import { Header } from "@/components/dashboard/header";
+import { Sidebar } from '@/components/dashboard/sidebar';
+import { Header } from '@/components/dashboard/header';
 
-import { useSession } from "@/hooks/auth/use-session";
-import { useSidebar } from "@/hooks/ui/use-sidebar";
+import { useSession } from '@/hooks/auth/use-session';
+import { useSidebar } from '@/hooks/ui/use-sidebar';
 
 export default function DashboardLayout({
   children,
@@ -33,7 +33,7 @@ export default function DashboardLayout({
       !isLoading &&
       !data?.user
     ) {
-      router.push("/login");
+      router.push('/login');
     }
   }, [
     data,
@@ -62,8 +62,8 @@ export default function DashboardLayout({
         <div
           className={`flex h-full flex-col transition-all duration-300 ${
             collapsed
-              ? "md:ml-16"
-              : "md:ml-64"
+              ? 'md:ml-16'
+              : 'md:ml-64'
           }`}
         >
           <Header

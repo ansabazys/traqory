@@ -1,67 +1,73 @@
-"use client";
+'use client';
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from 'react';
 
-import { WebsiteContext } from "@/contexts/website-context";
-import { useWebsites } from "@/hooks/websites/use-websites";
-import { Website } from "@/components/websites/types";
+import { WebsiteContext } from '@/contexts/website-context';
+import { useWebsites } from '@/hooks/websites/use-websites';
 
-const STORAGE_KEY =
-  "traqory:selected-website";
+const STORAGE_KEY = 'traqory:selected-website';
 
 export function WebsiteProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data } = useWebsites();
+  const {
+    data: websites = [],
+    isLoading,
+  } = useWebsites();
 
-  const [website, setWebsite] =
-    useState<Website | null>(null);
+  const [selectedWebsiteId, setSelectedWebsiteId] = useState<
+    string | 'all'
+  >('all');
 
-  // Restore selected website
   useEffect(() => {
-    if (!data?.length) return;
-
-    const storedId =
-      localStorage.getItem(
-        STORAGE_KEY,
-      );
-
-    if (storedId) {
-      const selected =
-        data.find(
-          (site) =>
-            site.id === storedId,
-        ) ?? null;
-
-      if (selected) {
-        setWebsite(selected);
-        return;
-      }
+    if (!websites.length) {
+      return;
     }
 
-    setWebsite(data[0]);
-  }, [data]);
+    const storedId =
+      localStorage.getItem(STORAGE_KEY);
 
-  // Persist selection
+    if (
+      storedId &&
+      (storedId === 'all' ||
+        websites.some(
+          (website) =>
+            website.id === storedId,
+        ))
+    ) {
+      setSelectedWebsiteId(storedId);
+      return;
+    }
+
+    setSelectedWebsiteId('all');
+  }, [websites]);
+
   useEffect(() => {
-    if (!website) return;
-
     localStorage.setItem(
       STORAGE_KEY,
-      website.id,
+      selectedWebsiteId,
     );
-  }, [website]);
+  }, [selectedWebsiteId]);
+
+  const selectedWebsite =
+    selectedWebsiteId === 'all'
+      ? null
+      : websites.find(
+          (website) =>
+            website.id ===
+            selectedWebsiteId,
+        ) ?? null;
 
   return (
     <WebsiteContext.Provider
       value={{
-        website,
-        setWebsite,
+        websites,
+        isLoading,
+        selectedWebsiteId,
+        selectedWebsite,
+        setSelectedWebsiteId,
       }}
     >
       {children}

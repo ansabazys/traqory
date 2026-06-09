@@ -1,18 +1,23 @@
-"use client";
+'use client';
 
-import { Website } from "@/components/websites/types";
 import {
   createContext,
   useContext,
-} from "react";
+} from 'react';
 
+import { Website } from '@/components/websites/types';
 
+export interface WebsiteContextValue {
+  websites: Website[];
 
-interface WebsiteContextValue {
-  website: Website | null;
+  isLoading: boolean;
 
-  setWebsite: (
-    website: Website | null,
+  selectedWebsiteId: string | 'all';
+
+  selectedWebsite: Website | null;
+
+  setSelectedWebsiteId: (
+    websiteId: string | 'all',
   ) => void;
 }
 
@@ -22,13 +27,12 @@ export const WebsiteContext =
   >(undefined);
 
 export function useWebsiteContext() {
-  const context = useContext(
-    WebsiteContext,
-  );
+  const context =
+    useContext(WebsiteContext);
 
   if (!context) {
     throw new Error(
-      "useWebsiteContext must be used inside WebsiteProvider",
+      'useWebsiteContext must be used inside WebsiteProvider',
     );
   }
 
