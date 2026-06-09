@@ -8,12 +8,16 @@ import { rateLimitPlugin } from './plugins/rate-limit';
 export async function buildApp() {
   const app = Fastify({
     logger: true,
+    trustProxy: true,
   });
 
   await app.register(errorHandlerPlugin);
   await app.register(rateLimitPlugin);
 
-  await app.register(cors);
+  await app.register(cors, {
+    origin: true,
+    credentials: false,
+  });
 
   await app.register(healthRoutes, {
     prefix: '/health',
