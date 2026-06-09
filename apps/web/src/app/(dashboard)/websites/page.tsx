@@ -16,6 +16,7 @@ import { useDeleteWebsite } from '@/hooks/websites/use-delete-website';
 import { WebsitesRegenerateApiKeyModal } from '@/components/websites/websites-regenerate-modal';
 import { Website } from '@/components/websites/types';
 import { useRotateApiKey } from '@/hooks/websites/use-rotate-api-key';
+import { WebsitesDeleteModal } from '@/components/websites/websites-delete-modal';
 
 const pageVariants = {
   hidden: {},
@@ -48,6 +49,7 @@ export default function WebsitesPage() {
     key: string;
   } | null>(null);
   const [isRegenerateModalOpen, setIsRegenerateModalOpen] = useState(false);
+  const [deleteWebsite, setDeleteWebsite] = useState<Website | null>(null);
 
   const createWebsiteMutation = useCreateWebsite();
 
@@ -131,16 +133,6 @@ export default function WebsitesPage() {
     setOpenMenuId(null);
   }
 
-  async function handleDeleteWebsite(websiteId: string) {
-    await deleteWebsiteMutation.mutateAsync(websiteId);
-
-    setOpenMenuId(null);
-
-    if (setupWebsiteId === websiteId) {
-      setSetupWebsiteId(null);
-    }
-  }
-
   const topStats = [
     { label: 'Projects', value: websites.length, detail: `${totals.activeCount} active` },
     {
@@ -191,7 +183,15 @@ export default function WebsitesPage() {
             onViewEvents={(website) => router.push(`/events?website=${website.id}`)}
             onCopyScript={handleCopyScript}
             onRegenerateApiKey={handleRegenerateApiKey}
-            onDeleteWebsite={handleDeleteWebsite}
+            onDeleteWebsite={(websiteId) => {
+              const website = websites.find((w) => w.id === websiteId);
+
+              if (website) {
+                setDeleteWebsite(website);
+              }
+
+              setOpenMenuId(null);
+            }}
             onOpenSetup={setSetupWebsiteId}
             variants={pageVariants}
           />
@@ -267,6 +267,32 @@ export default function WebsitesPage() {
           }
         }}
         isPending={rotateApiKeyMutation.isPending}
+      />
+
+      <WebsitesDeleteModal
+        open={Boolean(deleteWebsite)}
+        websiteName={deleteWebsite?.name}
+        isPending={deleteWebsiteMutation.isPending}
+        onClose={() => {
+          setDeleteWebsite(null);
+        }}
+        onConfirm={async () => {
+          if (!deleteWebsite) {
+            return;
+          }
+
+          try {
+            await deleteWebsiteMutation.mutateAsync(deleteWebsite.id);
+
+            if (setupWebsiteId === deleteWebsite.id) {
+              setSetupWebsiteId(null);
+            }
+
+            setDeleteWebsite(null);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
       />
     </>
   );
