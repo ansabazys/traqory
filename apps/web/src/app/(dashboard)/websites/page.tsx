@@ -32,7 +32,7 @@ function formatCompactNumber(value: number) {
 export default function WebsitesPage() {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const { data: websites = [] } = useWebsites();
+  const { data: websites = [], refetch, isFetching } = useWebsites();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [setupWebsiteId, setSetupWebsiteId] = useState<string | null>(null);
@@ -154,6 +154,8 @@ export default function WebsitesPage() {
         <WebsitesStatsGrid stats={topStats} variants={pageVariants} />
         <WebsitesPageHeader
           onAddWebsite={() => setIsAddModalOpen(true)}
+          onRefresh={() => refetch()}
+          isRefreshing={isFetching}
           variants={{
             hidden: { opacity: 0, y: 18 },
             show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
