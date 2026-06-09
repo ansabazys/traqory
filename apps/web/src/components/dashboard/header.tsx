@@ -2,8 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import {
-  ChevronLeft,
-  ChevronRight,
   Menu,
 } from 'lucide-react';
 
@@ -86,7 +84,7 @@ export function Header({
             />
           ) : null)}
 
-        <div className="flex items-center overflow-hidden border border-[#1a1a1a] bg-[#111111]">
+        {/* <div className="flex items-center overflow-hidden border border-[#1a1a1a] bg-[#111111]">
           <button className="px-3 py-1.5 text-xs text-[#888888] hover:text-[#ededed]">
             Last 24h
           </button>
@@ -102,7 +100,7 @@ export function Header({
           <button className="px-2 py-1.5 text-[#888888] hover:bg-[#161616] hover:text-[#ededed]">
             <ChevronRight className="h-4 w-4" />
           </button>
-        </div>
+        </div> */}
       </div>
     </header>
   );
