@@ -161,7 +161,7 @@ export default function SettingsPage() {
       initial="hidden"
       animate="show"
       variants={pageVariants}
-      className="flex min-h-screen w-full flex-col gap-4 bg-[#0a0a0a] pb-12 text-white"
+      className="flex min-h-screen w-full flex-col gap-4 pb-12 text-white"
     >
       <motion.div
         className="grid grid-cols-1 gap-4 md:grid-cols-3"

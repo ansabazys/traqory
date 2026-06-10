@@ -239,7 +239,7 @@ export default function EventsPage() {
           },
         },
       }}
-      className="flex w-full h-full min-h-screen flex-col gap-4 bg-[#0a0a0a] pb-10 text-white uppercase"
+      className="flex w-full h-full min-h-screen flex-col gap-4 pb-10 text-white uppercase"
     >
       <motion.div
         className="grid grid-cols-1 gap-4 md:grid-cols-3"
