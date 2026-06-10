@@ -105,7 +105,7 @@ export default function OverviewPage() {
 
   return (
     <motion.div
-      className="flex w-full flex-col gap-5 pb-10"
+      className="flex w-full h-full flex-col gap-5"
       initial="hidden"
       animate="show"
       variants={{

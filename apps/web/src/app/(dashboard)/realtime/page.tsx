@@ -1,81 +1,125 @@
-"use client";
+'use client';
 
-import { motion } from "motion/react";
-import { RealtimeLiveEventsPanel } from "@/components/realtime/realtime-live-events-panel";
-import { RealtimeSidePanels } from "@/components/realtime/realtime-side-panels";
-import { RealtimeStatsGrid } from "@/components/realtime/realtime-stats-grid";
+import { motion } from 'motion/react';
 
-const topStats = [
-  { label: "Users", value: "1,245", delta: "+12%", tone: "text-emerald-500", trend: "up" as const },
-  {
-    label: "Events/Sec",
-    value: "415",
-    delta: "+5%",
-    tone: "text-emerald-500",
-    trend: "up" as const,
-  },
-  { label: "Sessions", value: "892", delta: "-2%", tone: "text-red-500", trend: "down" as const },
-];
+import { RealtimeLiveEventsPanel } from '@/components/realtime/realtime-live-events-panel';
+import { RealtimeSidePanels } from '@/components/realtime/realtime-side-panels';
+import { RealtimeStatsGrid } from '@/components/realtime/realtime-stats-grid';
 
-const liveRows = [
-  {
-    time: "14:32:45",
-    geo: "US",
-    path: "/pricing",
-    event: "page_view",
-    eventColor: "text-[#ededed]",
-  },
-  {
-    time: "14:32:44",
-    geo: "DE",
-    path: "/docs/api-reference",
-    event: "click",
-    eventColor: "text-[#888888]",
-  },
-  {
-    time: "14:32:42",
-    geo: "IN",
-    path: "/dashboard/settings",
-    event: "page_view",
-    eventColor: "text-[#ededed]",
-  },
-  { time: "14:32:40", geo: "UK", path: "/signup", event: "signup", eventColor: "text-emerald-500" },
-  {
-    time: "14:32:38",
-    geo: "US",
-    path: "/blog/new-features",
-    event: "page_view",
-    eventColor: "text-[#ededed]",
-  },
-  { time: "14:32:35", geo: "CA", path: "/pricing", event: "click", eventColor: "text-[#888888]" },
-  {
-    time: "14:32:31",
-    geo: "FR",
-    path: "/",
-    event: "page_view",
-    eventColor: "text-[#ededed]",
-    highlight: true,
-  },
-  { time: "14:32:28", geo: "JP", path: "/docs", event: "page_view", eventColor: "text-[#ededed]" },
-  { time: "14:32:25", geo: "AU", path: "/about", event: "click", eventColor: "text-[#888888]" },
-  {
-    time: "14:32:20",
-    geo: "US",
-    path: "/pricing",
-    event: "page_view",
-    eventColor: "text-[#ededed]",
-  },
-  { time: "14:32:15", geo: "BR", path: "/login", event: "click", eventColor: "text-[#888888]" },
-];
+import { useRealtime } from '@/hooks/analytics/use-realtime';
+import { useWebsiteContext } from '@/contexts/website-context';
 
-const topRegions = [
-  { geo: "US", count: "320", width: "40%" },
-  { geo: "IN", count: "210", width: "30%" },
-  { geo: "DE", count: "145", width: "20%" },
-  { geo: "UK", count: "89", width: "12%" },
-];
+function getCountryCode(countryName: string) {
+  const regionNames = new Intl.DisplayNames(['en'], {
+    type: 'region',
+  });
+
+  const regionCodes = [
+    'US',
+    'IN',
+    'DE',
+    'GB',
+    'FR',
+    'CA',
+    'AU',
+    'JP',
+    'BR',
+    'KR',
+    'CN',
+    'RU',
+    'IT',
+    'ES',
+    'NL',
+    'SE',
+    'NO',
+    'DK',
+    'FI',
+    'CH',
+  ];
+
+  const match = regionCodes.find((code) => regionNames.of(code) === countryName);
+
+  return match ?? countryName;
+}
 
 export default function RealtimePage() {
+  const { selectedWebsite } = useWebsiteContext();
+
+  const snapshot = useRealtime(selectedWebsite?.id);
+
+  console.log('SELECTED WEBSITE', selectedWebsite);
+
+  console.log('SNAPSHOT', snapshot);
+
+  const topStats = [
+    {
+      label: 'Users',
+      value: String(snapshot?.users ?? 0),
+      delta: '+0%',
+      tone: 'text-emerald-500',
+      trend: 'up' as const,
+    },
+    {
+      label: 'Events/Sec',
+      value: String(snapshot?.eventsPerSecond ?? 0),
+      delta: '+0%',
+      tone: 'text-emerald-500',
+      trend: 'up' as const,
+    },
+    {
+      label: 'Sessions',
+      value: String(snapshot?.sessions ?? 0),
+      delta: '+0%',
+      tone: 'text-emerald-500',
+      trend: 'up' as const,
+    },
+  ];
+
+  const liveRows =
+    snapshot?.liveEvents.map((event) => ({
+      time: new Date(event.time).toLocaleTimeString(),
+
+      geo: event.country,
+
+      path: event.path,
+
+      event: event.event,
+
+      eventColor:
+        event.event === 'signup'
+          ? 'text-emerald-500'
+          : event.event === 'click'
+            ? 'text-[#888888]'
+            : 'text-[#ededed]',
+    })) ?? [];
+
+  const eventTypes = Object.entries(snapshot?.eventTypes ?? {})
+    .sort((a, b) => b[1] - a[1])
+    .map(([event, count]) => ({
+      event,
+      count,
+    }));
+
+  const activePages = Object.entries(snapshot?.activePages ?? {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([path, count]) => ({
+      path,
+      count,
+    }));
+
+  const countryEntries = Object.entries(snapshot?.countries ?? {}).sort((a, b) => b[1] - a[1]);
+
+  const max = countryEntries[0]?.[1] ?? 1;
+
+  const topRegions = countryEntries.map(([geo, count]) => ({
+    geo: getCountryCode(geo),
+
+    count: String(count),
+
+    width: `${Math.max(10, (count / max) * 100)}%`,
+  }));
+
   return (
     <motion.div
       className="flex flex-col gap-4 w-full h-full text-white uppercase bg-[#0a0a0a] min-h-screen"
@@ -95,13 +139,26 @@ export default function RealtimePage() {
       <motion.div
         className="flex flex-1 min-h-[600px] flex-col gap-4 pb-10 lg:flex-row"
         variants={{
-          hidden: { opacity: 0, y: 18 },
-          show: { opacity: 1, y: 0 },
+          hidden: {
+            opacity: 0,
+            y: 18,
+          },
+          show: {
+            opacity: 1,
+            y: 0,
+          },
         }}
-        transition={{ duration: 0.45 }}
+        transition={{
+          duration: 0.45,
+        }}
       >
         <RealtimeLiveEventsPanel rows={liveRows} />
-        <RealtimeSidePanels regions={topRegions} />
+
+        <RealtimeSidePanels
+          regions={topRegions}
+          eventTypes={eventTypes}
+          activePages={activePages}
+        />
       </motion.div>
     </motion.div>
   );
