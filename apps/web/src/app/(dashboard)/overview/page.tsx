@@ -7,6 +7,7 @@ import { OverviewSummaryGrid } from '@/components/overview/overview-summary-grid
 
 import { useWebsiteContext } from '@/contexts/website-context';
 import { useOverview } from '@/hooks/analytics/use-overview';
+import { Loader } from 'lucide-react';
 
 type WorldMapLocation = {
   country: string;
@@ -60,9 +61,9 @@ export default function OverviewPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[60vh] items-center justify-center">
+      <div className="flex h-full w-full items-center justify-center">
         <div className="text-sm font-mono uppercase tracking-widest text-[#888888]">
-          Loading Overview...
+          <Loader className='animate-spin' />
         </div>
       </div>
     );
