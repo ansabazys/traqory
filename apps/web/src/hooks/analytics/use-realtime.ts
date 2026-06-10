@@ -38,9 +38,11 @@ export function useRealtime(websiteId?: string) {
   const [snapshot, setSnapshot] = useState<RealtimeSnapshot | null>(null);
 
   useEffect(() => {
-    if (!websiteId) return;
+    if (!websiteId) {
+      return;
+    }
 
-    const source = new EventSource(`http://localhost:3002/v1/realtime/${websiteId}/stream`);
+    const source = new EventSource(`/api/analytics/v1/realtime/${websiteId}/stream`);
 
     source.onopen = () => {
       console.log('SSE Connected');
@@ -49,9 +51,6 @@ export function useRealtime(websiteId?: string) {
     source.onmessage = (event) => {
       const payload = JSON.parse(event.data);
 
-      console.log('Snapshot:', payload);
-
-      // Ignore connection message
       if (payload.type === 'connected') {
         return;
       }
@@ -70,3 +69,4 @@ export function useRealtime(websiteId?: string) {
 
   return snapshot;
 }
+    
