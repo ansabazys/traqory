@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 
-const AUTH_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL!;
+const API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL!;
 
 async function handler(
   request: NextRequest,
@@ -11,47 +10,38 @@ async function handler(
     }>;
   },
 ) {
-  const { path } =
-    await context.params;
+  const { path } = await context.params;
 
-  const target =
-    `${AUTH_URL}/api/auth/${path.join('/')}`;
+  const target = `${API_URL}/api/auth/${path.join('/')}`;
 
-  const response = await fetch(
-    target,
-    {
-      method: request.method,
+  const response = await fetch(target, {
+    method: request.method,
 
-      headers: request.headers,
+    headers: request.headers,
 
-      body:
-        request.method === 'GET'
-          ? undefined
-          : await request.text(),
-    },
-  );
+    body: request.method === 'GET' ? undefined : await request.text(),
+  });
 
-  const body =
-    await response.text();
+  const headers = new Headers();
 
-  const nextResponse =
-    new Response(body, {
-      status: response.status,
-    });
+  response.headers.forEach((value, key) => {
+    const lower = key.toLowerCase();
 
-  response.headers.forEach(
-    (value, key) => {
-      nextResponse.headers.set(
-        key,
-        value,
-      );
-    },
-  );
+    if (
+      lower === 'content-encoding' ||
+      lower === 'content-length' ||
+      lower === 'transfer-encoding'
+    ) {
+      return;
+    }
 
-  return nextResponse;
+    headers.set(key, value);
+  });
+
+  return new Response(response.body, {
+    status: response.status,
+    headers,
+  });
 }
 
-export {
-  handler as GET,
-  handler as POST,
-};
+export { handler as GET, handler as POST };
