@@ -34,7 +34,7 @@ export async function login(
   data: LoginInput,
 ) {
   return authApi.post(
-    "/api/auth/sign-in/email",
+    "/sign-in/email",
     data,
   );
 }
@@ -47,19 +47,19 @@ export async function register(
   },
 ) {
   return authApi.post(
-    "/api/auth/sign-up/email",
+    "/sign-up/email",
     data,
   );
 }
 
 export async function getSession(): Promise<SessionResponse> {
   return authApi.get<SessionResponse>(
-    "/api/auth/get-session",
+    "/get-session",
   );
 }
 export function logout() {
   return authApi.post(
-    "/api/auth/sign-out",
+    "/sign-out",
     {},
   );
 }

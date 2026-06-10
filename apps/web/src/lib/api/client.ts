@@ -1,4 +1,3 @@
-import { env } from '@/lib/env';
 import { fetcher } from './fetcher';
 
 function createApiClient(baseUrl: string) {
@@ -38,8 +37,8 @@ function createApiClient(baseUrl: string) {
   };
 }
 
-export const authApi = createApiClient(env.NEXT_PUBLIC_AUTH_API_URL);
+export const authApi = createApiClient('/api/auth');
 
-export const websiteApi = createApiClient(env.NEXT_PUBLIC_ANALYTICS_API_URL);
+export const websiteApi = createApiClient('/api/analytics');
 
-export const analyticsApi = createApiClient(env.NEXT_PUBLIC_ANALYTICS_API_URL);
+export const analyticsApi = createApiClient('/api/analytics');
