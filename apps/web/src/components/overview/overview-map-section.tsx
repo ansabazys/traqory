@@ -52,29 +52,6 @@ export function OverviewMapSection({
   return (
     <>
       <motion.div
-        variants={{
-          hidden: {
-            opacity: 0,
-            y: 20,
-          },
-          show: {
-            opacity: 1,
-            y: 0,
-          },
-        }}
-        transition={{
-          duration: 0.45,
-        }}
-        className="mb-4"
-      >
-        <h2 className="text-[10px] font-mono uppercase tracking-widest text-[#888888]">
-          <span className="text-white">Global Traffic - System Overview</span>
-          <br />
-          [Last 24 hours]
-        </h2>
-      </motion.div>
-
-      <motion.div
         className="relative mb-8 min-h-[500px] w-full flex-1 items-center"
         variants={{
           hidden: {
@@ -91,6 +68,29 @@ export function OverviewMapSection({
           ease: [0.22, 1, 0.36, 1],
         }}
       >
+        <motion.div
+          variants={{
+            hidden: {
+              opacity: 0,
+              y: 20,
+            },
+            show: {
+              opacity: 1,
+              y: 0,
+            },
+          }}
+          transition={{
+            duration: 0.45,
+          }}
+          className="mb-4"
+        >
+          <h2 className="text-[10px] absolute top-0 w-full font-mono uppercase tracking-widest text-[#888888]">
+            <span className="text-white">Global Traffic - System Overview</span>
+            <br />
+            [Last 24 hours]
+          </h2>
+        </motion.div>
+
         <OverviewMapOverlay
           totalRequests={visitors.toLocaleString()}
           totalRate={activeVisitors.toLocaleString()}
