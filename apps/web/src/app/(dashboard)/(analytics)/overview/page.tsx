@@ -60,7 +60,46 @@ export default function OverviewPage() {
     return null;
   }
 
-  const mapMarkers =
+  const countryMap = new Map<
+    string,
+    {
+      lat: number;
+      lng: number;
+      count: number;
+    }
+  >();
+
+  overview.worldMap
+    ?.filter(
+      (location: WorldMapLocation) => location.latitude !== null && location.longitude !== null,
+    )
+    .forEach((location: WorldMapLocation) => {
+      const existing = countryMap.get(location.country);
+
+      if (existing) {
+        existing.count += location.count;
+      } else {
+        countryMap.set(location.country, {
+          lat: location.latitude!,
+          lng: location.longitude!,
+          count: location.count,
+        });
+      }
+    });
+
+  const mapGlobeMarkers = Array.from(countryMap.entries()).map(([country, data]) => ({
+    lat: data.lat,
+    lng: data.lng,
+
+    size: Math.min(0.12, 0.03 + data.count * 0.002),
+
+    overlay: {
+      countryCode: getCountryCode(country),
+      label: getCountryCode(country),
+    },
+  }));
+
+  const mapDotMarkers =
     overview.worldMap
       ?.filter(
         (location: WorldMapLocation) => location.latitude !== null && location.longitude !== null,
@@ -82,6 +121,7 @@ export default function OverviewPage() {
 
   const topCountries =
     overview.topCountries?.map((country: TopCountry, index: number) => ({
+      name: country.name,
       code: getCountryCode(country.name),
 
       requests: country.count.toLocaleString(),
@@ -92,28 +132,29 @@ export default function OverviewPage() {
     })) ?? [];
 
   return (
-      <motion.div
-        className="flex w-full h-full flex-col gap-5"
-        initial="hidden"
-        animate="show"
-        variants={{
-          hidden: {},
-          show: {
-            transition: {
-              staggerChildren: 0.08,
-            },
+    <motion.div
+      className="flex w-full md:h-full flex-col gap-5 md:pb-0 pb-10"
+      initial="hidden"
+      animate="show"
+      variants={{
+        hidden: {},
+        show: {
+          transition: {
+            staggerChildren: 0.08,
           },
-        }}
-      >
-        <OverviewMapSection
-          markers={mapMarkers}
-          topCountries={topCountries}
-          visitors={overview.visitors}
-          activeVisitors={overview.activeVisitors}
-          regionCount={overview.topRegions?.length ?? 0}
-        />
+        },
+      }}
+    >
+      <OverviewMapSection
+        globeMarkers={mapGlobeMarkers}
+        dotMarkers={mapDotMarkers}
+        topCountries={topCountries}
+        visitors={overview.visitors}
+        activeVisitors={overview.activeVisitors}
+        regionCount={overview.topRegions?.length ?? 0}
+      />
 
-        <OverviewSummaryGrid overview={overview} />
-      </motion.div>
+      <OverviewSummaryGrid overview={overview} />
+    </motion.div>
   );
 }
