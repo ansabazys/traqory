@@ -1,10 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  Check,
-  ChevronDown,
-} from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 
 import { Website } from '@/components/websites/types';
 
@@ -19,7 +16,9 @@ export function WebsiteSelector({
   selectedWebsiteId,
   onChange,
 }: Props) {
-  const [open, setOpen] =
+  const [open, setOpen] = useState(false);
+
+  const [mobileExpanded, setMobileExpanded] =
     useState(false);
 
   const containerRef =
@@ -35,6 +34,13 @@ export function WebsiteSelector({
         )
       ) {
         setOpen(false);
+
+        if (
+          typeof window !== 'undefined' &&
+          window.innerWidth < 640
+        ) {
+          setMobileExpanded(false);
+        }
       }
     }
 
@@ -64,27 +70,41 @@ export function WebsiteSelector({
   return (
     <div
       ref={containerRef}
-      className="relative"
+      className="relative shrink-0"
     >
       <button
         type="button"
-        onClick={() =>
-          setOpen((prev) => !prev)
-        }
-        className="
-          flex h-9 min-w-[220px]
-          items-center justify-between
+        onClick={() => {
+          if (
+            typeof window !== 'undefined' &&
+            window.innerWidth < 640
+          ) {
+            if (!mobileExpanded) {
+              setMobileExpanded(true);
+              return;
+            }
+          }
+
+          setOpen((prev) => !prev);
+        }}
+        className={`
+          flex h-9 items-center
           border border-[#1a1a1a]
           bg-[#111111]
-          px-3
-          text-xs
-          font-mono
-          uppercase
-          tracking-widest
           text-white
-          transition-colors
+          transition-all duration-300
           hover:border-[#2a2a2a]
-        "
+
+          ${
+            mobileExpanded
+              ? 'w-[150px] px-3 justify-between'
+              : 'w-9 px-0 justify-center'
+          }
+
+          sm:w-[220px]
+          sm:px-3
+          sm:justify-between
+        `}
       >
         <div className="flex items-center gap-2 overflow-hidden">
           {selectedWebsite && (
@@ -95,26 +115,60 @@ export function WebsiteSelector({
             />
           )}
 
-          <span className="truncate">
+          <span
+            className={`
+              truncate
+              text-xs
+              font-mono
+              uppercase
+              tracking-widest
+
+              ${
+                mobileExpanded
+                  ? 'block'
+                  : 'hidden'
+              }
+
+              sm:block
+            `}
+          >
             {selectedWebsite?.name}
           </span>
         </div>
 
         <ChevronDown
-          className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${
-            open
-              ? 'rotate-180'
-              : ''
-          }`}
+          className={`
+            h-3.5 w-3.5
+            flex-shrink-0
+            transition-transform
+
+            ${
+              mobileExpanded
+                ? 'block'
+                : 'hidden'
+            }
+
+            sm:block
+
+            ${
+              open
+                ? 'rotate-180'
+                : ''
+            }
+          `}
         />
       </button>
 
       {open && (
         <div
           className="
-            absolute right-0 top-11 z-50
-            min-w-[260px]
-            border border-[#1a1a1a]
+            absolute
+            right-0
+            top-11
+            z-50
+            w-[240px]
+            border
+            border-[#1a1a1a]
             bg-[#0a0a0a]
             p-1
             shadow-2xl
@@ -129,11 +183,27 @@ export function WebsiteSelector({
                   onChange(
                     website.id,
                   );
+
                   setOpen(false);
+
+                  if (
+                    typeof window !==
+                      'undefined' &&
+                    window.innerWidth <
+                      640
+                  ) {
+                    setMobileExpanded(
+                      false,
+                    );
+                  }
                 }}
                 className="
-                  flex w-full items-center justify-between
-                  px-3 py-2
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+                  px-3
+                  py-2
                   text-left
                   text-xs
                   font-mono
