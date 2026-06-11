@@ -127,7 +127,7 @@ export function ProfileMenu({
       closeMenu();
 
       router.push(
-        "/login",
+        "/",
       );
     }
   }

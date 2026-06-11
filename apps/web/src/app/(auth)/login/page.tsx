@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 import { useLogin } from '@/hooks/auth/use-login';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from '@/hooks/auth/use-session';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,7 +21,14 @@ export default function LoginPage() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const queryClient = useQueryClient();
+
   const loginMutation = useLogin();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session) redirect('/overview');
+  }, [session, router]);
 
   async function handleLogin() {
     setError(null);
@@ -30,21 +39,20 @@ export default function LoginPage() {
         password,
       });
 
-      router.push('/overview');
+      await queryClient.invalidateQueries({
+        queryKey: ['session'],
+      });
+
+      router.replace('/overview');
     } catch (error) {
       if (error instanceof Error) {
-        try {
-          const parsed = JSON.parse(error.message);
-
-          setError(parsed.message ?? 'Something went wrong');
-        } catch {
-          setError(error.message);
-        }
+        setError(error.message);
       } else {
         setError('Something went wrong');
       }
     }
   }
+
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-6">
       <div className="w-full max-w-sm border border-[#1a1a1a] bg-[#0a0a0a]">
