@@ -41,29 +41,16 @@ function getCountryCode(countryName: string) {
 }
 
 export default function OverviewPage() {
-  const { selectedWebsiteId, selectedWebsite } = useWebsiteContext();
+  const { selectedWebsiteId } = useWebsiteContext();
 
   const { data: overview, isLoading } = useOverview(selectedWebsiteId);
 
-  if (!selectedWebsite) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center border border-[#1a1a1a] bg-[#0a0a0a]">
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-white">No Website Selected</h2>
-
-          <p className="mt-2 text-sm text-[#888888]">
-            Create a website to start collecting analytics.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="text-sm font-mono uppercase tracking-widest text-[#888888]">
-          <Loader className='animate-spin' />
+      <div className="flex h-full items-center justify-center">
+        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#666666]">
+          <Loader className="h-4 w-4 animate-spin" />
+          Loading analytics...
         </div>
       </div>
     );
@@ -105,28 +92,28 @@ export default function OverviewPage() {
     })) ?? [];
 
   return (
-    <motion.div
-      className="flex w-full h-full flex-col gap-5"
-      initial="hidden"
-      animate="show"
-      variants={{
-        hidden: {},
-        show: {
-          transition: {
-            staggerChildren: 0.08,
+      <motion.div
+        className="flex w-full h-full flex-col gap-5"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.08,
+            },
           },
-        },
-      }}
-    >
-      <OverviewMapSection
-        markers={mapMarkers}
-        topCountries={topCountries}
-        visitors={overview.visitors}
-        activeVisitors={overview.activeVisitors}
-        regionCount={overview.topRegions?.length ?? 0}
-      />
+        }}
+      >
+        <OverviewMapSection
+          markers={mapMarkers}
+          topCountries={topCountries}
+          visitors={overview.visitors}
+          activeVisitors={overview.activeVisitors}
+          regionCount={overview.topRegions?.length ?? 0}
+        />
 
-      <OverviewSummaryGrid overview={overview} />
-    </motion.div>
+        <OverviewSummaryGrid overview={overview} />
+      </motion.div>
   );
 }
