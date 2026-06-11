@@ -3,8 +3,9 @@
 import * as React from 'react';
 import { motion } from 'motion/react';
 
-import { DottedMap } from '@/components/ui/dotted-map';
+import Globe from '../ui/globe';
 import { OverviewMapOverlay } from '@/components/overview/overview-map-overlay';
+import { DottedMap } from '../ui/dotted-map';
 
 type OverviewMarker = {
   lat: number;
@@ -16,6 +17,14 @@ type OverviewMarker = {
   };
 };
 
+type TopCountry = {
+  code: string;
+  name: string;
+  requests: string;
+  rate: string;
+  color: string;
+};
+
 type OverlayProps = {
   marker: OverviewMarker;
   x: number;
@@ -24,29 +33,37 @@ type OverlayProps = {
   index: number;
 };
 
-type TopCountry = {
-  code: string;
-  color: string;
-  requests: string;
-  rate: string;
-};
-
 type Props = {
-  markers: OverviewMarker[];
+  dotMarkers: OverviewMarker[];
+  globeMarkers: OverviewMarker[];
   topCountries: TopCountry[];
-
   visitors: number;
   activeVisitors: number;
   regionCount: number;
 };
 
 export function OverviewMapSection({
-  markers,
+  dotMarkers,
+  globeMarkers,
   topCountries,
   visitors,
   activeVisitors,
   regionCount,
 }: Props) {
+  const globeCobeMarkers = React.useMemo(
+    () =>
+      globeMarkers
+        .sort((a, b) => (b.size ?? 0) - (a.size ?? 0))
+        .slice(0, 5)
+        .map((marker, index) => ({
+          id: `country-${index}`,
+          label: marker.overlay.countryCode,
+          location: [marker.lat, marker.lng] as [number, number],
+          size: marker.size,
+        })),
+    [globeMarkers],
+  );
+
   const id = React.useId();
 
   return (
@@ -82,24 +99,26 @@ export function OverviewMapSection({
           transition={{
             duration: 0.45,
           }}
-          className="mb-4"
+          className="mb-4 "
         >
-          <h2 className="text-[10px] absolute top-0 w-full font-mono uppercase tracking-widest text-[#888888]">
+          <h2 className="hidden md:block text-[10px] absolute top-0 w-full font-mono uppercase tracking-widest text-[#888888]">
             <span className="text-white">Global Traffic - System Overview</span>
             <br />
             [Last 24 hours]
           </h2>
         </motion.div>
 
-        <OverviewMapOverlay
-          totalRequests={visitors.toLocaleString()}
-          totalRate={activeVisitors.toLocaleString()}
-          topCountries={topCountries}
-          regionCount={regionCount}
-        />
+        <div className="hidden md:block">
+          <OverviewMapOverlay
+            totalRequests={visitors.toLocaleString()}
+            totalRate={activeVisitors.toLocaleString()}
+            topCountries={topCountries}
+            regionCount={regionCount}
+          />
+        </div>
 
         <motion.div
-          className="absolute inset-0 -ml-32 flex items-center justify-center"
+          className="absolute hidden inset-0 -ml-32 md:flex items-center justify-center"
           initial={{
             opacity: 0,
             scale: 0.96,
@@ -118,7 +137,7 @@ export function OverviewMapSection({
             width={300}
             height={150}
             mapSamples={12000}
-            markers={markers}
+            markers={dotMarkers}
             dotRadius={0.4}
             className="opacity-80"
             renderMarkerOverlay={(props: OverlayProps) => {
@@ -175,6 +194,25 @@ export function OverviewMapSection({
             }}
           />
         </motion.div>
+
+        <div className="flex flex-col gap-10">
+          <h2 className="text-[10px] md:hidden  w-full font-mono uppercase tracking-widest text-[#888888]">
+            <span className="text-white">Global Traffic - System Overview</span>
+            <br />
+            [Last 24 hours]
+          </h2>
+
+          <div className="md:hidden">
+            <Globe markers={globeCobeMarkers} />
+          </div>
+
+          <OverviewMapOverlay
+            totalRequests={visitors.toLocaleString()}
+            totalRate={activeVisitors.toLocaleString()}
+            topCountries={topCountries}
+            regionCount={regionCount}
+          />
+        </div>
       </motion.div>
     </>
   );

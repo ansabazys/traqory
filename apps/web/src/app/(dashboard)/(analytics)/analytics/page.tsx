@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
       initial="hidden"
       animate="show"
       variants={pageVariants}
-      className="flex flex-col gap-4 w-full h-full pb-20 text-white uppercase bg-[#0a0a0a] min-h-screen"
+      className="flex flex-col gap-4 w-full h-full pb-20 text-white uppercase min-h-screen"
     >
       {/* 1. KPI Cards Row */}
       <motion.div

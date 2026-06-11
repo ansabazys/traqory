@@ -7,6 +7,7 @@ import { OverviewSummaryGrid } from '@/components/overview/overview-summary-grid
 
 import { useWebsiteContext } from '@/contexts/website-context';
 import { useOverview } from '@/hooks/analytics/use-overview';
+import { Loader } from 'lucide-react';
 
 type WorldMapLocation = {
   country: string;
@@ -40,29 +41,16 @@ function getCountryCode(countryName: string) {
 }
 
 export default function OverviewPage() {
-  const { selectedWebsiteId, selectedWebsite } = useWebsiteContext();
+  const { selectedWebsiteId } = useWebsiteContext();
 
   const { data: overview, isLoading } = useOverview(selectedWebsiteId);
 
-  if (!selectedWebsite) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center border border-[#1a1a1a] bg-[#0a0a0a]">
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-white">No Website Selected</h2>
-
-          <p className="mt-2 text-sm text-[#888888]">
-            Create a website to start collecting analytics.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <div className="text-sm font-mono uppercase tracking-widest text-[#888888]">
-          Loading Overview...
+      <div className="flex h-full items-center justify-center">
+        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#666666]">
+          <Loader className="h-4 w-4 animate-spin" />
+          Loading analytics...
         </div>
       </div>
     );
@@ -72,7 +60,46 @@ export default function OverviewPage() {
     return null;
   }
 
-  const mapMarkers =
+  const countryMap = new Map<
+    string,
+    {
+      lat: number;
+      lng: number;
+      count: number;
+    }
+  >();
+
+  overview.worldMap
+    ?.filter(
+      (location: WorldMapLocation) => location.latitude !== null && location.longitude !== null,
+    )
+    .forEach((location: WorldMapLocation) => {
+      const existing = countryMap.get(location.country);
+
+      if (existing) {
+        existing.count += location.count;
+      } else {
+        countryMap.set(location.country, {
+          lat: location.latitude!,
+          lng: location.longitude!,
+          count: location.count,
+        });
+      }
+    });
+
+  const mapGlobeMarkers = Array.from(countryMap.entries()).map(([country, data]) => ({
+    lat: data.lat,
+    lng: data.lng,
+
+    size: Math.min(0.12, 0.03 + data.count * 0.002),
+
+    overlay: {
+      countryCode: getCountryCode(country),
+      label: getCountryCode(country),
+    },
+  }));
+
+  const mapDotMarkers =
     overview.worldMap
       ?.filter(
         (location: WorldMapLocation) => location.latitude !== null && location.longitude !== null,
@@ -94,6 +121,7 @@ export default function OverviewPage() {
 
   const topCountries =
     overview.topCountries?.map((country: TopCountry, index: number) => ({
+      name: country.name,
       code: getCountryCode(country.name),
 
       requests: country.count.toLocaleString(),
@@ -105,7 +133,7 @@ export default function OverviewPage() {
 
   return (
     <motion.div
-      className="flex w-full h-full flex-col gap-5"
+      className="flex w-full md:h-full flex-col gap-5 md:pb-0 pb-10"
       initial="hidden"
       animate="show"
       variants={{
@@ -118,7 +146,8 @@ export default function OverviewPage() {
       }}
     >
       <OverviewMapSection
-        markers={mapMarkers}
+        globeMarkers={mapGlobeMarkers}
+        dotMarkers={mapDotMarkers}
         topCountries={topCountries}
         visitors={overview.visitors}
         activeVisitors={overview.activeVisitors}

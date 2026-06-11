@@ -29,3 +29,85 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #27272a transparent;
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: white !important;
+
+  -webkit-box-shadow: 0 0 0px 1000px #111111 inset !important;
+
+  box-shadow: 0 0 0px 1000px #111111 inset !important;
+
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.cobe-label {
+  position: absolute;
+
+  bottom: anchor(top);
+  left: anchor(center);
+
+  translate: -50% -10px;
+
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 10px;
+
+  border-radius: 0px;
+
+  background: rgba(10, 10, 10, 0.92);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  white-space: nowrap;
+
+  backdrop-filter: blur(12px);
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  pointer-events: none;
+
+  z-index: 50;
+}
+
+.cobe-label::after {
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  bottom: -3px;
+
+  width: 6px;
+  height: 6px;
+
+  background: rgba(10, 10, 10, 0.92);
+
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  transform: translateX(-50%) rotate(45deg);
+}
+
+
+.cobe-label {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 0 20px rgba(59,130,246,0.25),
+    0 12px 32px rgba(0,0,0,0.45);
+}

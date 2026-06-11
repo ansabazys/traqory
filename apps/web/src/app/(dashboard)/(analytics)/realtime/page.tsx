@@ -122,7 +122,7 @@ export default function RealtimePage() {
 
   return (
     <motion.div
-      className="flex flex-col gap-4 w-full h-full text-white uppercase bg-[#0a0a0a] min-h-screen"
+      className="flex flex-col gap-4 w-full h-full text-white uppercase min-h-screen"
       initial="hidden"
       animate="show"
       variants={{

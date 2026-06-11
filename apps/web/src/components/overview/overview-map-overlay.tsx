@@ -22,12 +22,12 @@ export function OverviewMapOverlay({
 }) {
   return (
     <motion.div
-      className="absolute top-[30%] left-0 z-10 flex flex-col gap-8 font-mono pointer-events-none"
+      className="md:absolute md:top-[30%] left-0 z-10 flex flex-col gap-8 font-mono pointer-events-none"
       initial={{ opacity: 0, x: -18 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div>
+      <div className=''>
         <h3 className="mb-1 text-[10px] tracking-widest text-[#888888] uppercase">
           Total visitors
         </h3>

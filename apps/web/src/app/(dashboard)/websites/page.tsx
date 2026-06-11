@@ -149,7 +149,7 @@ export default function WebsitesPage() {
         initial="hidden"
         animate="show"
         variants={pageVariants}
-        className="flex min-h-screen w-full flex-col gap-4 bg-[#0a0a0a] pb-10 text-white"
+        className="flex min-h-screen w-full flex-col gap-4 pb-10 text-white"
       >
         <WebsitesStatsGrid stats={topStats} variants={pageVariants} />
         <WebsitesPageHeader
