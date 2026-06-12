@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import Fastify from 'fastify';
 
-import { createEvent } from '@traqory/database';
+import { createEvents } from '@traqory/database';
 import { createEventsWorker } from '@traqory/queue';
 
 const ANALYTICS_API_URL = process.env.ANALYTICS_API_URL ?? 'http://localhost:3002';
@@ -10,8 +10,8 @@ const ANALYTICS_API_URL = process.env.ANALYTICS_API_URL ?? 'http://localhost:300
 const worker = createEventsWorker(async (job) => {
   console.log(`Processing job ${job.id} (${job.data.length} events)`);
 
-  for (const event of job.data) {
-    await createEvent({
+  await createEvents(
+    job.data.map((event) => ({
       websiteId: event.websiteId,
 
       event: event.event,
@@ -55,10 +55,12 @@ const worker = createEventsWorker(async (job) => {
       timestamp: new Date(event.timestamp),
 
       receivedAt: new Date(event.receivedAt),
-    });
+    })),
+  );
 
-    try {
-      await fetch(`${ANALYTICS_API_URL}/v1/realtime/event`, {
+  await Promise.allSettled(
+    job.data.map((event) =>
+      fetch(`${ANALYTICS_API_URL}/v1/realtime/event`, {
         method: 'POST',
 
         headers: {
@@ -80,11 +82,9 @@ const worker = createEventsWorker(async (job) => {
 
           time: event.timestamp,
         }),
-      });
-    } catch (error) {
-      console.error('Realtime broadcast failed', error);
-    }
-  }
+      }),
+    ),
+  );
 });
 
 worker.on('ready', () => {
