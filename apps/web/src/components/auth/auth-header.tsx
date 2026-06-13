@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 export function AuthHeader() {
   return (
-    <header className="sticky top-0 z-50 md:mt-5">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between border  border-white/5 bg-[#0a0a0a]  px-5">
+    <header className="sticky top-0 z-50">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-3">
           <span className="text-lg font-semibold text-white">traqory</span>
         </Link>
