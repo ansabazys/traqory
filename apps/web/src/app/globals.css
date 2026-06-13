@@ -104,10 +104,26 @@ select:-webkit-autofill {
   transform: translateX(-50%) rotate(45deg);
 }
 
-
 .cobe-label {
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 0 20px rgba(59,130,246,0.25),
-    0 12px 32px rgba(0,0,0,0.45);
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 20px rgba(59, 130, 246, 0.25),
+    0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
