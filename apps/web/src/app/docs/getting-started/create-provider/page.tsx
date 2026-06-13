@@ -12,7 +12,7 @@ export default function CreateProviderPage() {
           Step 03
         </p>
 
-        <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
           Create a Provider
         </h1>
 
@@ -67,7 +67,7 @@ export function TraqoryProvider() {
           title=".env.local"
           code={`NEXT_PUBLIC_TRAQORY_API_KEY=trq_live_xxxxxxxxxxxxxxxxx
 
-NEXT_PUBLIC_TRAQORY_ENDPOINT=https://traqory-ingestion-service.onrender.com`}
+NEXT_PUBLIC_TRAQORY_ENDPOINT=https://traqory-ingestion-service.onrender.com/v1/events`}
           codeClassName="text-[#86efac]"
         />
       </section>
