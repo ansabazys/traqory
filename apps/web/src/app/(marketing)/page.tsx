@@ -10,6 +10,7 @@ import { HowItWorksSection } from '@/components/landing/how-it-works-section';
 import { PricingSection } from '@/components/landing/pricing-section';
 import { FinalCTASection } from '@/components/landing/final-cta-section';
 import { LandingFooter } from '@/components/landing/landing-footer';
+import { LandingHeader } from '@/components/landing/landing-header';
 
 export default function HomePage() {
   const { data, isLoading } = useSession();
@@ -29,6 +30,7 @@ export default function HomePage() {
 
   return (
     <main>
+      <LandingHeader />
       <HeroSection />
       <FeaturesSection/>
       <DashboardPreviewSection />
