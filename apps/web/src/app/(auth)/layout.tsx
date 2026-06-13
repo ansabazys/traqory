@@ -1,5 +1,5 @@
-
-import React from "react";
+import { AuthHeader } from '@/components/auth/auth-header';
+import React from 'react';
 
 // const mapMarkers = [
 //   { lat: 40.7128, lng: -74.006, color: "#3b82f6" }, // NY (blue)
@@ -19,33 +19,9 @@ import React from "react";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-black w-full justify-center text-[#a1a1aa] flex relative overflow-hidden text-sm selection:bg-[#3f3f46] selection:text-white">
-      <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-fuchsia-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
-      <div className="absolute top-[40%] right-[20%] w-[20vw] h-[20vw] bg-indigo-600/10 rounded-full blur-[100px] mix-blend-screen pointer-events-none" />
-
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)] pointer-events-none" />
-
-      <div className="flex-1 flex gap-10  justify-center items-center relative z-10 w-full lg:w-1/2">
-        <div className="w-full flex justify-center gap-10">
-          {/* <div className="max-w-md p-10 bg-neutral-950 rounded-2xl md:block  hidden">
-            <h2 className="text-4xl font-normal text-white mb-6 tracking-tight font-sans">
-              We don’t just track events.
-              <br />
-              <span className="text-[#a1a1aa]">We reveal how users interact with your product.</span>
-            </h2>
-            <p className="text-[#71717a] text-lg leading-relaxed mb-12 font-sans font-light">
-              We reveal how users interact with your product. This is your space to move with
-              meaning, analyzing every signal in real-time.
-            </p>
-
-            <div className="relative w-full gap-4 font-mono text-xs">
-              <DottedMap className="h-full" markers={mapMarkers} />
-            </div>
-          </div> */}
-          <div className="w-full"> {children} </div>
-        </div>
-      </div>
+    <div>
+      <AuthHeader />
+      <div className="w-full"> {children} </div>
     </div>
   );
 }
