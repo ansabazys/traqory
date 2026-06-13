@@ -8,6 +8,8 @@ import { FeaturesSection } from '@/components/landing/feature-section';
 import { DashboardPreviewSection } from '@/components/landing/dashboard-preview-section';
 import { HowItWorksSection } from '@/components/landing/how-it-works-section';
 import { PricingSection } from '@/components/landing/pricing-section';
+import { FinalCTASection } from '@/components/landing/final-cta-section';
+import { LandingFooter } from '@/components/landing/landing-footer';
 
 export default function HomePage() {
   const { data, isLoading } = useSession();
@@ -32,6 +34,8 @@ export default function HomePage() {
       <DashboardPreviewSection />
       <HowItWorksSection />
       <PricingSection />
+      <FinalCTASection />
+      <LandingFooter />
     </main>
   );
 }
