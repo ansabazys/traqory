@@ -15,12 +15,8 @@ type GlobeProps = {
   markers?: GlobeMarker[];
 };
 
-function Globe({
-  className,
-  markers = [],
-}: GlobeProps) {
-  const canvasRef =
-    useRef<HTMLCanvasElement>(null);
+function Globe({ className, markers = [] }: GlobeProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,29 +32,24 @@ function Globe({
     let lastX = 0;
 
     const globe = createGlobe(canvas, {
-      devicePixelRatio: Math.min(
-        window.devicePixelRatio,
-        1.25,
-      ),
+      devicePixelRatio: Math.min(window.devicePixelRatio, 1.25),
 
       width: 700,
       height: 700,
 
       phi: currentPhi,
       theta: 0.25,
+      baseColor: [0.1, 0.12, 0.14],
+
+      markerColor: [0.25, 0.75, 1],
+
+      glowColor: [0.1, 0.1, 0.1],
 
       dark: 1,
-      diffuse: 1.5,
+      diffuse: 2.5,
 
-      mapSamples: 8000,
-      mapBrightness: 4,
-
-      baseColor: [0.08, 0.08, 0.08],
-
-      // almost invisible markers
-      markerColor: [0.05, 0.05, 0.05],
-
-      glowColor: [0.25, 0.25, 0.25],
+      mapBrightness: 8,
+      mapSamples: 20000,
 
       markers: markers.map((marker) => ({
         id: marker.id,
@@ -67,23 +58,17 @@ function Globe({
       })),
     });
 
-    const onPointerDown = (
-      e: PointerEvent,
-    ) => {
+    const onPointerDown = (e: PointerEvent) => {
       pointerDown = true;
       lastX = e.clientX;
 
-      canvas.style.cursor =
-        'grabbing';
+      canvas.style.cursor = 'grabbing';
     };
 
-    const onPointerMove = (
-      e: PointerEvent,
-    ) => {
+    const onPointerMove = (e: PointerEvent) => {
       if (!pointerDown) return;
 
-      const delta =
-        e.clientX - lastX;
+      const delta = e.clientX - lastX;
 
       phi -= delta * 0.004;
 
@@ -93,48 +78,31 @@ function Globe({
     const onPointerUp = () => {
       pointerDown = false;
 
-      canvas.style.cursor =
-        'grab';
+      canvas.style.cursor = 'grab';
     };
 
     canvas.style.cursor = 'grab';
 
-    canvas.addEventListener(
-      'pointerdown',
-      onPointerDown,
-    );
+    canvas.addEventListener('pointerdown', onPointerDown);
 
-    canvas.addEventListener(
-      'pointermove',
-      onPointerMove,
-    );
+    canvas.addEventListener('pointermove', onPointerMove);
 
-    canvas.addEventListener(
-      'pointerup',
-      onPointerUp,
-    );
+    canvas.addEventListener('pointerup', onPointerUp);
 
-    canvas.addEventListener(
-      'pointerleave',
-      onPointerUp,
-    );
+    canvas.addEventListener('pointerleave', onPointerUp);
 
     const animate = () => {
       if (!pointerDown) {
         phi += 0.001;
       }
 
-      currentPhi +=
-        (phi - currentPhi) * 0.08;
+      currentPhi += (phi - currentPhi) * 0.08;
 
       globe.update({
         phi: currentPhi,
       });
 
-      frame =
-        requestAnimationFrame(
-          animate,
-        );
+      frame = requestAnimationFrame(animate);
     };
 
     animate();
@@ -142,25 +110,13 @@ function Globe({
     return () => {
       cancelAnimationFrame(frame);
 
-      canvas.removeEventListener(
-        'pointerdown',
-        onPointerDown,
-      );
+      canvas.removeEventListener('pointerdown', onPointerDown);
 
-      canvas.removeEventListener(
-        'pointermove',
-        onPointerMove,
-      );
+      canvas.removeEventListener('pointermove', onPointerMove);
 
-      canvas.removeEventListener(
-        'pointerup',
-        onPointerUp,
-      );
+      canvas.removeEventListener('pointerup', onPointerUp);
 
-      canvas.removeEventListener(
-        'pointerleave',
-        onPointerUp,
-      );
+      canvas.removeEventListener('pointerleave', onPointerUp);
 
       globe.destroy();
     };

@@ -54,14 +54,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-6">
+    <div className="min-h-screen bg-black absolute top-0 w-full flex items-center justify-center px-6">
       <div className="w-full max-w-sm border border-[#1a1a1a] bg-[#0a0a0a]">
         {/* Header */}
         <div className="border-b border-[#1a1a1a] p-5">
           <div className="flex items-center gap-3">
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
 
-            <span className="text-white font-semibold text-lg">traqory</span>
+            <span className="text-white font-semibold text-lg">login</span>
           </div>
         </div>
 
