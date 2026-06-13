@@ -7,6 +7,7 @@ import HeroSection from '@/components/landing/hero-section';
 import { FeaturesSection } from '@/components/landing/feature-section';
 import { DashboardPreviewSection } from '@/components/landing/dashboard-preview-section';
 import { HowItWorksSection } from '@/components/landing/how-it-works-section';
+import { PricingSection } from '@/components/landing/pricing-section';
 
 export default function HomePage() {
   const { data, isLoading } = useSession();
@@ -30,6 +31,7 @@ export default function HomePage() {
       <FeaturesSection/>
       <DashboardPreviewSection />
       <HowItWorksSection />
+      <PricingSection />
     </main>
   );
 }
