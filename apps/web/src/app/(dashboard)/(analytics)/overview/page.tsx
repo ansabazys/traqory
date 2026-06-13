@@ -98,24 +98,44 @@ export default function OverviewPage() {
       label: getCountryCode(country),
     },
   }));
+  const countryDotMap = new Map<
+    string,
+    {
+      lat: number;
+      lng: number;
+      count: number;
+    }
+  >();
 
-  const mapDotMarkers =
-    overview.worldMap
-      ?.filter(
-        (location: WorldMapLocation) => location.latitude !== null && location.longitude !== null,
-      )
-      .map((location: WorldMapLocation) => ({
-        lat: location.latitude!,
-        lng: location.longitude!,
+  overview.worldMap
+    ?.filter(
+      (location: WorldMapLocation) => location.latitude !== null && location.longitude !== null,
+    )
+    .forEach((location: WorldMapLocation) => {
+      const existing = countryDotMap.get(location.country);
 
-        size: Math.max(2.8, Math.min(8, location.count / 10)),
+      if (existing) {
+        existing.count += location.count;
+      } else {
+        countryDotMap.set(location.country, {
+          lat: location.latitude!,
+          lng: location.longitude!,
+          count: location.count,
+        });
+      }
+    });
 
-        overlay: {
-          countryCode: getCountryCode(location.country).toLowerCase(),
+  const mapDotMarkers = Array.from(countryDotMap.entries()).map(([country, data]) => ({
+    lat: data.lat,
+    lng: data.lng,
 
-          label: location.city || location.country || 'Unknown',
-        },
-      })) ?? [];
+    size: 4,
+
+    overlay: {
+      countryCode: getCountryCode(country).toLowerCase(),
+      label: country,
+    },
+  }));
 
   const countryColors = ['#3b82f6', '#eab308', '#ef4444', '#f97316', '#22c55e'];
 
