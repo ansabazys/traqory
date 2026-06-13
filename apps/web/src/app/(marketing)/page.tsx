@@ -6,6 +6,7 @@ import { Loader } from 'lucide-react';
 import HeroSection from '@/components/landing/hero-section';
 import { FeaturesSection } from '@/components/landing/feature-section';
 import { DashboardPreviewSection } from '@/components/landing/dashboard-preview-section';
+import { HowItWorksSection } from '@/components/landing/how-it-works-section';
 
 export default function HomePage() {
   const { data, isLoading } = useSession();
@@ -28,6 +29,7 @@ export default function HomePage() {
       <HeroSection />
       <FeaturesSection/>
       <DashboardPreviewSection />
+      <HowItWorksSection />
     </main>
   );
 }
